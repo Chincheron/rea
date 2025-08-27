@@ -1,5 +1,6 @@
 from pathlib import Path
 import file_util
+import xlwings as xw
 import openpyxl
 import logging
 
@@ -15,22 +16,12 @@ def main():
     file_util.copy_input_files('/mnt/g/My Drive/Paper Prep/Leslie Matrix/Versions/Current Working Version', BASE_DIR)
 
     input_file = 'NEW CorrectedLeslieMatrix.2025.08.26.v1.2.xlsx'
-    wb_rea = openpyxl.load_workbook(input_file, data_only=False)
 
-    inputs_sheet = wb_rea['Debit Inputs']
-    outputs_sheet = wb_rea['Debit Inputs']
+    wb_rea = xw.Book(input_file)
 
-    scenario_one = 'Scenario_1'
+    print(type(wb_rea))
 
-    max_age_input = 'M12'
 
-    max_age_value = 10
-
-    print(f'Running {scenario_one}')
-
-    inputs_sheet[max_age_input] = max_age_value
-
-    wb_rea.calculation()
     
 if __name__ == "__main__":
     main()
