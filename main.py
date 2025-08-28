@@ -12,7 +12,7 @@ def main():
     #copy current REA version file 
     file_util.copy_input_files('G:\My Drive\Paper Prep\Leslie Matrix\Versions\Current Working Version', BASE_DIR)
 
-    input_file = 'NEW CorrectedLeslieMatrix.2025.08.26.v1.3.1.xlsx
+    input_file = 'NEW CorrectedLeslieMatrix.2025.08.26.v1.3.1.xlsx'
 
     #load workbook
     wb_rea = xw.Book(input_file)
@@ -36,12 +36,20 @@ def main():
 
     #outputs to variables
     direct_loss_total = io_sheet['T3'].value
-    print(direct_loss_total)
+    indirect_loss_total_exclude = io_sheet['T4'].value
+    loss_total = io_sheet['T5'].value
+    gains_total = io_sheet['T7'].value
+
+    logging.info(f'Outputs copied to variable\n' 
+                 f'  Direct loss: {direct_loss_total}\n'
+                 f'  Indirect loss: {indirect_loss_total_exclude}\n'
+                 f'  Total Loss: {loss_total}\n'
+                 f'  Gain: {gains_total}')
 
     #save results
     with open('results.csv', 'w') as f:
-        f.write('input,output\n')
-        f.write(f'{max_age}, {direct_loss_total}\n')
+        f.write('Maximum Age, Base Year, Direct Loss, Indirect Loss, Total Loss, Total Gains\n')
+        f.write(f'{max_age}, {base_year}, {direct_loss_total}, {indirect_loss_total_exclude}, {loss_total}, {gains_total} \n')
 
     #close excel instance
     wb_rea.app.quit()
