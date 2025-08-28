@@ -5,6 +5,8 @@ import openpyxl
 import pandas as pd
 import logging
 import csv
+#TODO: 1) calculate annual reintroduction
+# 2) logging message to file
 
 def main():
     #Set Base directory to project root
