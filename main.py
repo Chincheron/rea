@@ -4,6 +4,7 @@ import xlwings as xw
 import openpyxl
 import pandas as pd
 import logging
+import csv
 
 def main():
     #Set Base directory to project root
@@ -26,46 +27,60 @@ def main():
     #load sheet with inputs and outputs
     io_sheet = wb_rea.sheets['Debit Inputs']
 
-    for index, row in scenarios.iterrows(): #consider switching to iterating over tuples if performance becomes issue
-        number_killed = row['number_killed']
-        discount_factor = row['discount_factor']
-        base_year = row['discount_start_year']
-        max_age = row['maximum_age']
-        logging.info(f'Scenario {index +1} inputs:\n' 
-                     f'Number Killed set to {number_killed}\n'
-                     f'Discount factor set to {discount_factor}\n'
-                     f'Base year set to {base_year}\n'
-                     f'Max age set to {max_age}'
-                     )
+    #open output csv
+    with open('output.csv', 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(['Number Killed', 'Discount Factor', 'Base Year', 'Maximum Age',
+                          'Direct Loss', 'Indirect Loss', 'Total Loss', 'Total Gains'])
+           
 
-        #set cells to scenario inputs
-        io_sheet['M8'].value = number_killed
-        io_sheet['M16'].value = discount_factor
-        io_sheet['M11'].value = base_year
-        io_sheet['M12'].value = max_age
-        
-        #force excel to recalculate
-        wb_rea.app.calculate()
+        for index, row in scenarios.iterrows(): #consider switching to iterating over tuples if performance becomes issue
+            number_killed = row['number_killed']
+            discount_factor = row['discount_factor']
+            base_year = row['discount_start_year']
+            max_age = row['maximum_age']
+            logging.info(f'Scenario {index +1} inputs:\n' 
+                        f'Number Killed set to {number_killed}\n'
+                        f'Discount factor set to {discount_factor}\n'
+                        f'Base year set to {base_year}\n'
+                        f'Max age set to {max_age}'
+                        )
 
-    #output next - need 1)direct DMSY lsot 2) Indirect DMSY lost 3) Totl DMSY Lost 4) DMSY Restored and 5) annual reelase over 1o eyars
-    #last one will be trickiest need to solve for it each time?
+            #set cells to scenario inputs
+            io_sheet['M8'].value = number_killed
+            io_sheet['M16'].value = discount_factor
+            io_sheet['M11'].value = base_year
+            io_sheet['M12'].value = max_age
+            
+            #force excel to recalculate
+            wb_rea.app.calculate()
 
-        #outputs to variables
-        direct_loss_total = io_sheet['T3'].value
-        indirect_loss_total_exclude = io_sheet['T4'].value
-        loss_total = io_sheet['T5'].value
-        gains_total = io_sheet['T7'].value
+        #output next - need 1)direct DMSY lsot 2) Indirect DMSY lost 3) Totl DMSY Lost 4) DMSY Restored and 5) annual reelase over 1o eyars
+        #last one will be trickiest need to solve for it each time?
 
-        logging.info(f'Outputs copied to variable\n' 
-                    f'  Direct loss: {direct_loss_total}\n'
-                    f'  Indirect loss: {indirect_loss_total_exclude}\n'
-                    f'  Total Loss: {loss_total}\n'
-                    f'  Gain: {gains_total}')
+            #outputs to variables
+            direct_loss_total = io_sheet['T3'].value
+            indirect_loss_total_exclude = io_sheet['T4'].value
+            loss_total = io_sheet['T5'].value
+            gains_total = io_sheet['T7'].value
 
-        #save results
-        with open('results.csv', 'w') as f:
-            f.write('Maximum Age, Base Year, Direct Loss, Indirect Loss, Total Loss, Total Gains\n')
-            f.write(f'{max_age}, {base_year}, {direct_loss_total}, {indirect_loss_total_exclude}, {loss_total}, {gains_total} \n')
+            logging.info(f'Outputs copied to variable\n' 
+                        f'  Direct loss: {direct_loss_total}\n'
+                        f'  Indirect loss: {indirect_loss_total_exclude}\n'
+                        f'  Total Loss: {loss_total}\n'
+                        f'  Gain: {gains_total}')
+
+            #append results
+            writer.writerow([
+                row['number_killed'],
+                row['discount_factor'],
+                row['discount_start_year'],
+                row['maximum_age'],
+                direct_loss_total,
+                indirect_loss_total_exclude,
+                loss_total,
+                gains_total
+            ])
 
     #close excel instance
     wb_rea.app.quit()
