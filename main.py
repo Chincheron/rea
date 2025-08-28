@@ -20,57 +20,55 @@ def main():
     scenarios = pd.read_csv(input_file)
     logging.info(f'Loaded {len(scenarios)} from scenarios input file')
 
+    #load workbook
+    wb_rea = xw.Book(rea_file)
+
+    #load sheet with inputs and outputs
+    io_sheet = wb_rea.sheets['Debit Inputs']
+
     for index, row in scenarios.iterrows(): #consider switching to iterating over tuples if performance becomes issue
         number_killed = row['number_killed']
         discount_factor = row['discount_factor']
-        discount_year = row['discount_start_year']
+        base_year = row['discount_start_year']
         max_age = row['maximum_age']
         logging.info(f'Scenario {index +1} inputs:\n' 
                      f'Number Killed set to {number_killed}\n'
                      f'Discount factor set to {discount_factor}\n'
-                     f'Base year set to {discount_year}\n'
+                     f'Base year set to {base_year}\n'
                      f'Max age set to {max_age}'
                      )
 
-    # #load workbook
-    # wb_rea = xw.Book(rea_file)
+        #set cells to scenario inputs
+        io_sheet['M8'].value = number_killed
+        io_sheet['M16'].value = discount_factor
+        io_sheet['M11'].value = base_year
+        io_sheet['M12'].value = max_age
+        
+        #force excel to recalculate
+        wb_rea.app.calculate()
 
-    # #load sheet with inputs and outputs
-    # io_sheet = wb_rea.sheets['Debit Inputs']
+    #output next - need 1)direct DMSY lsot 2) Indirect DMSY lost 3) Totl DMSY Lost 4) DMSY Restored and 5) annual reelase over 1o eyars
+    #last one will be trickiest need to solve for it each time?
 
-    # #create variables for inputs for scenario
-    # max_age = 50
-    # base_year = 2016
+        #outputs to variables
+        direct_loss_total = io_sheet['T3'].value
+        indirect_loss_total_exclude = io_sheet['T4'].value
+        loss_total = io_sheet['T5'].value
+        gains_total = io_sheet['T7'].value
 
-    # #set cells to scenario inputs
-    # io_sheet['M12'].value = max_age
-    # io_sheet['M11'].value = base_year
+        logging.info(f'Outputs copied to variable\n' 
+                    f'  Direct loss: {direct_loss_total}\n'
+                    f'  Indirect loss: {indirect_loss_total_exclude}\n'
+                    f'  Total Loss: {loss_total}\n'
+                    f'  Gain: {gains_total}')
 
-    # #force excel to recalculate
-    # wb_rea.app.calculate()
+        #save results
+        with open('results.csv', 'w') as f:
+            f.write('Maximum Age, Base Year, Direct Loss, Indirect Loss, Total Loss, Total Gains\n')
+            f.write(f'{max_age}, {base_year}, {direct_loss_total}, {indirect_loss_total_exclude}, {loss_total}, {gains_total} \n')
 
-    # #output next - need 1)direct DMSY lsot 2) Indirect DMSY lost 3) Totl DMSY Lost 4) DMSY Restored and 5) annual reelase over 1o eyars
-    # #last one will be trickiest need to solve for it each time?
-
-    # #outputs to variables
-    # direct_loss_total = io_sheet['T3'].value
-    # indirect_loss_total_exclude = io_sheet['T4'].value
-    # loss_total = io_sheet['T5'].value
-    # gains_total = io_sheet['T7'].value
-
-    # logging.info(f'Outputs copied to variable\n' 
-    #              f'  Direct loss: {direct_loss_total}\n'
-    #              f'  Indirect loss: {indirect_loss_total_exclude}\n'
-    #              f'  Total Loss: {loss_total}\n'
-    #              f'  Gain: {gains_total}')
-
-    # #save results
-    # with open('results.csv', 'w') as f:
-    #     f.write('Maximum Age, Base Year, Direct Loss, Indirect Loss, Total Loss, Total Gains\n')
-    #     f.write(f'{max_age}, {base_year}, {direct_loss_total}, {indirect_loss_total_exclude}, {loss_total}, {gains_total} \n')
-
-    # #close excel instance
-    # wb_rea.app.quit()
+    #close excel instance
+    wb_rea.app.quit()
     
 if __name__ == "__main__":
     main()
