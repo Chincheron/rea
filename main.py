@@ -14,7 +14,7 @@ def main():
     print(BASE_DIR)
     
     #copy current REA version file 
-    # file_util.copy_input_files('G:\My Drive\Paper Prep\Leslie Matrix\Versions\Current Working Version', BASE_DIR)
+    file_util.copy_input_files('G:\My Drive\Paper Prep\Leslie Matrix\Versions\Current Working Version', BASE_DIR)
 
     rea_file = 'NEW CorrectedLeslieMatrix.2025.08.26.v1.3.1.xlsx'
     input_file = 'Example_input_file.csv'
@@ -26,6 +26,8 @@ def main():
     #load workbook
     wb_rea = xw.Book(rea_file)
 
+    excel_application = wb_rea.app.api
+
     #load sheet with inputs and outputs
     io_sheet = wb_rea.sheets['Debit Inputs']
 
@@ -33,7 +35,7 @@ def main():
     with open('output.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(['Number Killed', 'Discount Factor', 'Base Year', 'Maximum Age',
-                          'Direct Loss', 'Indirect Loss', 'Total Loss', 'Total Gains'])
+                          'Direct Loss', 'Indirect Loss', 'Total Loss', 'Total Gains', 'Annual Reintroduction'])
            
 
         for index, row in scenarios.iterrows(): #consider switching to iterating over tuples if performance becomes issue
@@ -54,6 +56,17 @@ def main():
             io_sheet['M11'].value = base_year
             io_sheet['M12'].value = max_age
             
+            #use goal seek to determine number of annual reintroductions needed for gain to equal loss
+            # Goal Seek: set T5 = 1000 by changing T10
+            set_cell = io_sheet.range('T8').api # The cell with the formula
+            to_value = 1                          # The desired result
+            by_changing_cell = io_sheet.range('M21').api # The input cell to change
+
+            set_cell.GoalSeek(Goal=to_value, ChangingCell=by_changing_cell)
+            
+            # io_sheet.range('T8').goal_seek(1, io_sheet.range('M21'))
+            logging.info(f'Required annual reintroduction calculated')
+
             #force excel to recalculate
             wb_rea.app.calculate()
 
@@ -65,12 +78,15 @@ def main():
             indirect_loss_total_exclude = io_sheet['T4'].value
             loss_total = io_sheet['T5'].value
             gains_total = io_sheet['T7'].value
+            annual_reintorduction = io_sheet['M21'].value
 
             logging.info(f'Outputs copied to variable\n' 
                         f'  Direct loss: {direct_loss_total}\n'
                         f'  Indirect loss: {indirect_loss_total_exclude}\n'
                         f'  Total Loss: {loss_total}\n'
-                        f'  Gain: {gains_total}')
+                        f'  Gain: {gains_total}'
+                        f'  Annual Reintroduction: {annual_reintorduction}'
+                        )
 
             #append results
             writer.writerow([
@@ -81,7 +97,8 @@ def main():
                 direct_loss_total,
                 indirect_loss_total_exclude,
                 loss_total,
-                gains_total
+                gains_total,
+                annual_reintorduction
             ])
 
     #close excel instance
