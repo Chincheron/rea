@@ -16,7 +16,7 @@ def main():
     #copy current REA version file 
     file_util.copy_input_files('G:\My Drive\Paper Prep\Leslie Matrix\Versions\Current Working Version', BASE_DIR)
 
-    rea_file = 'NEW CorrectedLeslieMatrix.2025.08.26.v1.3.1.xlsx'
+    rea_file = 'Mussel REA_v2.0.xlsx'
     input_file = 'Example_input_file.csv'
 
     #load input file
@@ -101,6 +101,13 @@ def main():
                 gains_total,
                 annual_reintorduction
             ])
+
+            #check QC tests
+            qc_test = io_sheet['N24'].value
+            if qc_test == 'PASS':
+                logging.info(f'QC test passed for Scenario {index +1}')
+            else: 
+                logging.warning(f'QC test failed for Scenario {index +1}')
 
     #close excel instance
     wb_rea.app.quit()
