@@ -6,8 +6,15 @@ import openpyxl
 import pandas as pd
 import logging
 import csv
+import json
 #TODO: 1) calculate annual reintroduction
 # 2) logging message to file
+
+def load_config(config_path='config.json'):
+    """Load configuration from JSON file"""
+    with open(config_path, 'r') as f:
+        config = json.load(f)
+    return config
 
 def setup_loggers():
     '''Setup loggers for different logging info'''
@@ -63,6 +70,8 @@ def setup_loggers():
     return main_logger, warning_logger, detail_logger, console_logger
 
 def main():
+    config = load_config()
+
     main_logger, warning_logger, detail_logger, console_logger  = setup_loggers()
 
     # initial constants
@@ -70,11 +79,13 @@ def main():
     main_logger.info(f'Base directory set')
     TIMESTAMP = datetime.now().strftime('%Y%m%d_%H%M%S')
 
+    #settings from config
+    files = config['files']
+    directories = config['directories']
 
-    #set inputs
-    rea_file = 'Mussel REA_v2.0.xlsx'
-    input_file = 'Example_input_file.csv'
-    copy_dir = 'G:\My Drive\Paper Prep\Leslie Matrix\Versions\Current Working Version'
+    rea_file = files['rea_file']
+    input_file = files['input_file']
+    copy_dir = directories['copy_source']
     
     output_dir = Path('output') / f'run_{TIMESTAMP}'
     output_dir.mkdir(parents=True, exist_ok=True)

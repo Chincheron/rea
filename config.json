@@ -1,0 +1,32 @@
+{
+  "files": {
+    "rea_file": "Mussel REA_v2.0.xlsx",
+    "input_file": "Example_input_file.csv"
+  },
+  "directories": {
+    "copy_source": "G:\\My Drive\\Paper Prep\\Leslie Matrix\\Versions\\Current Working Version",
+    "output_base": "output",
+    "input_base": "inputs"
+  },
+  "excel": {
+    "sheet_name": "Debit Inputs",
+    "cells": {
+      "number_killed": "M8",
+      "discount_factor": "M16",
+      "base_year": "M11",
+      "max_age": "M12",
+      "annual_reintroduction": "M21",
+      "loss_ratio": "T8",
+      "qc_test": "N24"
+    },
+    "output_cells": {
+      "direct_loss": "T3",
+      "indirect_loss": "T4",
+      "total_loss": "T5",
+      "total_gains": "T7"
+    }
+  },
+  "goal_seek": {
+    "target_value": 1
+  }
+}
