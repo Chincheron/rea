@@ -31,6 +31,8 @@ def main():
     #load sheet with inputs and outputs
     io_sheet = wb_rea.sheets['Debit Inputs']
 
+    fail_scenario_written = False
+
     #open output csv
     with open('output.csv', 'w', newline='') as file:
         writer = csv.writer(file)
@@ -108,6 +110,27 @@ def main():
                 logging.info(f'QC test passed for Scenario {index +1}')
             else: 
                 logging.warning(f'QC test failed for Scenario {index +1}')
+                
+                if fail_scenario_written == False:
+                    with open('failed_scenario.csv', 'w', newline='') as fail_file:
+                        fail_writer = csv.writer(fail_file)
+                        fail_writer.writerow(['Scenario', 'Number Killed', 'Discount Factor', 'Base Year', 'Maximum Age',
+                                'Direct Loss', 'Indirect Loss', 'Total Loss', 'Total Gains', 'Annual Reintroduction'])
+                    fail_scenario_written = True
+                with open('failed_scenario.csv', 'a', newline='') as fail_file:
+                        fail_writer = csv.writer(fail_file)
+                        fail_writer.writerow([
+                            index + 1,
+                            row['number_killed'],
+                            row['discount_factor'],
+                            row['discount_start_year'],
+                            row['maximum_age'],
+                            direct_loss_total,
+                            indirect_loss_total_exclude,
+                            loss_total,
+                            gains_total,
+                            annual_reintorduction
+                        ])
 
     #close excel instance
     wb_rea.app.quit()
