@@ -57,21 +57,22 @@ def main():
             io_sheet['M12'].value = max_age
             
             #use goal seek to determine number of annual reintroductions needed for gain to equal loss
-            # Goal Seek: set T5 = 1000 by changing T10
-            set_cell = io_sheet.range('T8').api # The cell with the formula
-            to_value = 1                          # The desired result
-            by_changing_cell = io_sheet.range('M21').api # The input cell to change
-
+            # Goal Seek: set Goal:Loss ratio (T8) to 1 by changing Annual Mussel Reintroduction (M21)
+            set_cell = io_sheet.range('T8').api 
+            to_value = 1                          
+            by_changing_cell = io_sheet.range('M21').api 
             set_cell.GoalSeek(Goal=to_value, ChangingCell=by_changing_cell)
-            
-            # io_sheet.range('T8').goal_seek(1, io_sheet.range('M21'))
             logging.info(f'Required annual reintroduction calculated')
+
+            #No such thing as partial mussel so round annual mussel reintroduction down to nearest whole number and set cell to value
+            whole_annual_reintroduction = io_sheet['M21'].value
+            logging.info(f'Exact Annual reintroduction: {whole_annual_reintroduction}')
+            whole_annual_reintroduction = int(whole_annual_reintroduction)
+            logging.info(f'Rounded Annual reintroduction: {whole_annual_reintroduction}')
+            io_sheet['M21'].value = whole_annual_reintroduction
 
             #force excel to recalculate
             wb_rea.app.calculate()
-
-        #output next - need 1)direct DMSY lsot 2) Indirect DMSY lost 3) Totl DMSY Lost 4) DMSY Restored and 5) annual reelase over 1o eyars
-        #last one will be trickiest need to solve for it each time?
 
             #outputs to variables
             direct_loss_total = io_sheet['T3'].value
