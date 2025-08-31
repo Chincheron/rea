@@ -81,14 +81,14 @@ def main():
             indirect_loss_total_exclude = io_sheet['T4'].value
             loss_total = io_sheet['T5'].value
             gains_total = io_sheet['T7'].value
-            annual_reintorduction = io_sheet['M21'].value
+            annual_reintroduction = io_sheet['M21'].value
 
             logging.info(f'Outputs copied to variable\n' 
                         f'  Direct loss: {direct_loss_total}\n'
                         f'  Indirect loss: {indirect_loss_total_exclude}\n'
                         f'  Total Loss: {loss_total}\n'
-                        f'  Gain: {gains_total}'
-                        f'  Annual Reintroduction: {annual_reintorduction}'
+                        f'  Gain: {gains_total}\n'
+                        f'  Annual Reintroduction: {annual_reintroduction}'
                         )
 
             #append results
@@ -101,7 +101,7 @@ def main():
                 indirect_loss_total_exclude,
                 loss_total,
                 gains_total,
-                annual_reintorduction
+                annual_reintroduction
             ])
 
             #check QC tests
@@ -129,7 +129,7 @@ def main():
                             indirect_loss_total_exclude,
                             loss_total,
                             gains_total,
-                            annual_reintorduction
+                            annual_reintroduction
                         ])
 
     #close excel instance
