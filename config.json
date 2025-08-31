@@ -5,8 +5,8 @@
   },
   "directories": {
     "copy_source": "G:\\My Drive\\Paper Prep\\Leslie Matrix\\Versions\\Current Working Version",
-    "output_base": "output",
-    "input_base": "inputs"
+    "output_folder": "output",
+    "input_folder": "inputs"
   },
   "excel": {
     "sheet_name": "Debit Inputs",

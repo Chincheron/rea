@@ -21,7 +21,7 @@ def setup_loggers():
 
     # Create timestamped folder for this run
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    log_dir = Path('logs') / f'run_{timestamp}'
+    log_dir = Path(f'run_{timestamp}') / 'logs'
     log_dir.mkdir(parents=True, exist_ok=True)
 
     #main logger for general info
@@ -87,15 +87,14 @@ def main():
     input_file = files['input_file']
     copy_dir = directories['copy_source']
     
-    output_dir = Path('output') / f'run_{TIMESTAMP}'
+    output_dir = f'run_{TIMESTAMP}' / Path(directories['output_folder']) 
     output_dir.mkdir(parents=True, exist_ok=True)
     
-    input_dir = Path('inputs') / f'run_{TIMESTAMP}'
+    input_dir = f'run_{TIMESTAMP}' / Path(directories['input_folder']) 
     input_dir.mkdir(parents=True, exist_ok=True)
     input_file = input_dir / input_file
     rea_file = input_dir / rea_file
 
-    
     #copy current REA version file 
     file_util.copy_input_files(copy_dir, input_dir)
     main_logger.info(f'Input files copied from current working version folder')
