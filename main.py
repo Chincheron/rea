@@ -65,16 +65,29 @@ def setup_loggers():
 def main():
     main_logger, warning_logger, detail_logger, console_logger  = setup_loggers()
 
-    #Set Base directory to project root
-    BASE_DIR = Path(__file__).resolve().parents[0]
+    # initial constants
+    BASE_DIR = Path(__file__).resolve().parents[0] #set to root directory
     main_logger.info(f'Base directory set')
-    
-    #copy current REA version file 
-    file_util.copy_input_files('G:\My Drive\Paper Prep\Leslie Matrix\Versions\Current Working Version', BASE_DIR)
-    main_logger.info(f'Input files copied from current working version folder')
+    TIMESTAMP = datetime.now().strftime('%Y%m%d_%H%M%S')
 
+
+    #set inputs
     rea_file = 'Mussel REA_v2.0.xlsx'
     input_file = 'Example_input_file.csv'
+    copy_dir = 'G:\My Drive\Paper Prep\Leslie Matrix\Versions\Current Working Version'
+    
+    output_dir = Path('output') / f'run_{TIMESTAMP}'
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    input_dir = Path('inputs') / f'run_{TIMESTAMP}'
+    input_dir.mkdir(parents=True, exist_ok=True)
+    input_file = input_dir / input_file
+    rea_file = input_dir / rea_file
+
+    
+    #copy current REA version file 
+    file_util.copy_input_files(copy_dir, input_dir)
+    main_logger.info(f'Input files copied from current working version folder')
 
     #load input file
     scenarios = pd.read_csv(input_file)
@@ -93,7 +106,7 @@ def main():
     fail_scenario_written = False
 
     #open output csv
-    with open('output.csv', 'w', newline='') as file:
+    with open(output_dir / 'output.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(['Number Killed', 'Discount Factor', 'Base Year', 'Maximum Age',
                           'Direct Loss', 'Indirect Loss', 'Total Loss', 'Total Gains', 'Annual Reintroduction'])
@@ -178,7 +191,7 @@ def main():
                 warning_logger.warning(f'Scenario {scenario_number}: QC test failed')
                 
                 if fail_scenario_written == False:
-                    with open('failed_scenario.csv', 'w', newline='') as fail_file:
+                    with open(output_dir / 'failed_scenario.csv', 'w', newline='') as fail_file:
                         fail_writer = csv.writer(fail_file)
                         fail_writer.writerow(['Scenario', 'Number Killed', 'Discount Factor', 'Base Year', 'Maximum Age',
                                 'Direct Loss', 'Indirect Loss', 'Total Loss', 'Total Gains', 'Annual Reintroduction'])
