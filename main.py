@@ -107,7 +107,10 @@ def main():
     main_logger.info(f'Loaded {len(scenarios)} from scenarios input file into dataframe')
 
     #load workbook
-    wb_rea = xw.Book(rea_file)
+    app = xw.App(visible=False)
+    app.display_alerts = False
+    app.screen_updating = False
+    wb_rea = app.books.open(rea_file)
     main_logger.info(f'REA model workbook loaded ({rea_file})')
 
     #load sheet with inputs and outputs
@@ -230,7 +233,8 @@ def main():
             console_logger.info(f'{scenario_number}/{len(scenarios)} complete')
 
     #close excel instance
-    wb_rea.app.quit()
+    wb_rea.close()
+    app.quit() 
     main_logger.info(f'Closed excel instance')
 
     END_TIME = time.perf_counter()
