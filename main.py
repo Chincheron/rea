@@ -116,7 +116,7 @@ def main():
     with open(output_dir / 'scenario_output.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(['Scenario', 'Number Killed', 'Discount Factor', 'Base Year', 'Maximum Age',
-                          'Direct Loss', 'Indirect Loss', 'Total Loss', 'Total Gains', 'Annual Reintroduction'])
+                          'Direct Loss', 'Indirect Loss', 'Total Loss', 'Total Gains', 'Annual Reintroduction Rounded', 'Annual Reintroduction Exact'])
         main_logger.info(f'Ouput file created')
            
         for index, row in scenarios.iterrows(): #consider switching to iterating over tuples if performance becomes issue
@@ -149,11 +149,11 @@ def main():
             main_logger.info(f'Scenario {scenario_number}: Required annual reintroduction calculated (for gain to equal loss)')
 
             #No such thing as partial mussel so round annual mussel reintroduction down to nearest whole number and set cell to value
-            whole_annual_reintroduction = io_sheet['M21'].value
-            detail_logger.info(f'Scenario {scenario_number}: Exact annual reintroduction: {whole_annual_reintroduction}')
-            whole_annual_reintroduction = int(whole_annual_reintroduction)
-            detail_logger.info(f'Scenario {scenario_number}: Rounded Annual reintroduction: {whole_annual_reintroduction}')
-            io_sheet['M21'].value = whole_annual_reintroduction
+            annual_reintroduction_rounded = io_sheet['M21'].value
+            detail_logger.info(f'Scenario {scenario_number}: Exact annual reintroduction: {annual_reintroduction_rounded}')
+            annual_reintroduction_exact = int(annual_reintroduction_rounded)
+            detail_logger.info(f'Scenario {scenario_number}: Rounded Annual reintroduction: {annual_reintroduction_exact}')
+            io_sheet['M21'].value =annual_reintroduction_exact
 
             #force excel to recalculate
             wb_rea.app.calculate()
@@ -178,7 +178,8 @@ def main():
                 indirect_loss_total_exclude,
                 loss_total,
                 gains_total,
-                annual_reintroduction
+                annual_reintroduction_rounded,
+                annual_reintroduction_exact
             ])
             main_logger.info(f'Scenario {scenario_number}: Excel outputs written to output file')
             detail_logger.info(f'Scenario {scenario_number}: Excel outputs written to output file:\n' 
@@ -186,7 +187,8 @@ def main():
                         f'  Indirect loss: {indirect_loss_total_exclude}\n'
                         f'  Total Loss: {loss_total}\n'
                         f'  Gain: {gains_total}\n'
-                        f'  Annual Reintroduction: {annual_reintroduction}'
+                        f'  Annual Reintroduction Rounded: {annual_reintroduction_rounded}\n'
+                        f'  Annual Reintroduction Exact: {annual_reintroduction_exact}\n'
                         )
 
 
@@ -202,7 +204,7 @@ def main():
                     with open(output_dir / 'failed_scenario.csv', 'w', newline='') as fail_file:
                         fail_writer = csv.writer(fail_file)
                         fail_writer.writerow(['Scenario', 'Number Killed', 'Discount Factor', 'Base Year', 'Maximum Age',
-                                'Direct Loss', 'Indirect Loss', 'Total Loss', 'Total Gains', 'Annual Reintroduction'])
+                                'Direct Loss', 'Indirect Loss', 'Total Loss', 'Total Gains', 'Annual Reintroduction Rounded', 'Annual Reintroduction Exact'])
                     fail_scenario_written = True
                     warning_logger.warning(f'Scenario {scenario_number}: Created failed scenario output file')
                 with open('failed_scenario.csv', 'a', newline='') as fail_file:
@@ -217,7 +219,8 @@ def main():
                             indirect_loss_total_exclude,
                             loss_total,
                             gains_total,
-                            annual_reintroduction
+                            annual_reintroduction_rounded,
+                            annual_reintroduction_exact
                         ])
                         warning_logger.warning(f'Scenario {scenario_number}: Failed scenario inputs/outputs written to failed scenario outputs file ')
 
