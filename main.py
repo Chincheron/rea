@@ -7,6 +7,8 @@ import pandas as pd
 import logging
 import csv
 import json
+import time
+
 #TODO: 1) calculate annual reintroduction
 # 2) logging message to file
 
@@ -78,6 +80,7 @@ def main():
     BASE_DIR = Path(__file__).resolve().parents[0] #set to root directory
     main_logger.info(f'Base directory set')
     TIMESTAMP = datetime.now().strftime('%Y%m%d_%H%M%S')
+    START_TIME = time.perf_counter()
 
     #settings from config
     files = config['files']
@@ -229,7 +232,13 @@ def main():
     #close excel instance
     wb_rea.app.quit()
     main_logger.info(f'Closed excel instance')
-    main_logger.info(f'Script finished')
+
+    END_TIME = time.perf_counter()
+    RUN_TIME = END_TIME - START_TIME
+    RUN_MINUTES = RUN_TIME // 60
+    RUN_SECONDS = round((RUN_TIME % 60), 1 )
+
+    console_logger.info(f'Script finished. Total Runtime: {RUN_MINUTES} minutes and {RUN_SECONDS} seconds')
 
 if __name__ == "__main__":
     main()
