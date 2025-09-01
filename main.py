@@ -83,7 +83,7 @@ def main():
     directories = config['directories']
 
     rea_file = files['rea_file']
-    input_file = files['input_file']
+    scenario_file = files['input_file']
     copy_dir = directories['copy_source']
     
     output_dir = f'run_{TIMESTAMP}' / Path(directories['output_folder']) 
@@ -91,16 +91,16 @@ def main():
     
     input_dir = f'run_{TIMESTAMP}' / Path(directories['input_folder']) 
     input_dir.mkdir(parents=True, exist_ok=True)
-    input_file = input_dir / input_file
+    scenario_file = input_dir / scenario_file
     rea_file = input_dir / rea_file
 
     #copy current REA version file 
     file_util.copy_input_files(copy_dir, input_dir)
     main_logger.info(f'Input files copied from current working version folder')
 
-    #load input file
-    scenarios = pd.read_csv(input_file)
-    main_logger.info(f'Loaded {len(scenarios)} from scenarios input file')
+    #load scenario input file
+    scenarios = pd.read_csv(scenario_file)
+    main_logger.info(f'Loaded {len(scenarios)} from scenarios input file into dataframe')
 
     #load workbook
     wb_rea = xw.Book(rea_file)
@@ -108,7 +108,7 @@ def main():
 
     #load sheet with inputs and outputs
     io_sheet = wb_rea.sheets['Debit Inputs']
-    main_logger.info(f'Scenario input file loaded ({input_file})')
+    main_logger.info(f'REA input sheet loaded ({io_sheet})')
 
     fail_scenario_written = False
 
