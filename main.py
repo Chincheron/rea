@@ -149,7 +149,7 @@ def main():
             main_logger.info(f'Scenario {scenario_number}: Required annual reintroduction calculated (for gain to equal loss)')
 
             #No such thing as partial mussel so round annual mussel reintroduction down to nearest whole number and set cell to value
-            annual_reintroduction_rounded = io_sheet['M21'].value
+            annual_reintroduction_rounded = round(io_sheet['M21'].value, 0)
             detail_logger.info(f'Scenario {scenario_number}: Exact annual reintroduction: {annual_reintroduction_rounded}')
             annual_reintroduction_exact = int(annual_reintroduction_rounded)
             detail_logger.info(f'Scenario {scenario_number}: Rounded Annual reintroduction: {annual_reintroduction_exact}')
@@ -160,10 +160,10 @@ def main():
             main_logger.info(f'Scenario {scenario_number}: Excel workbook recalculated')
 
             #outputs to variables
-            direct_loss_total = io_sheet['T3'].value
-            indirect_loss_total_exclude = io_sheet['T4'].value
-            loss_total = io_sheet['T5'].value
-            gains_total = io_sheet['T7'].value
+            direct_loss_total = round(io_sheet['T3'].value, 0)
+            indirect_loss_total_exclude = round(io_sheet['T4'].value, 0)
+            loss_total = round(io_sheet['T5'].value, 0)
+            gains_total = round(io_sheet['T7'].value, 0)
             annual_reintroduction = io_sheet['M21'].value
             main_logger.info(f'Scenario {scenario_number}: Excel outputs copied to variable')
             
