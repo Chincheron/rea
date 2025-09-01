@@ -2,15 +2,11 @@ from pathlib import Path
 from datetime import datetime
 import file_util
 import xlwings as xw
-import openpyxl
 import pandas as pd
 import logging
 import csv
 import json
 import time
-
-#TODO: 1) calculate annual reintroduction
-# 2) logging message to file
 
 def load_config(config_path='config.json'):
     """Load configuration from JSON file"""
@@ -109,8 +105,6 @@ def main():
     #load workbook
     wb_rea = xw.Book(rea_file)
     main_logger.info(f'REA model workbook loaded ({rea_file})')
-
-    excel_application = wb_rea.app.api
 
     #load sheet with inputs and outputs
     io_sheet = wb_rea.sheets['Debit Inputs']
