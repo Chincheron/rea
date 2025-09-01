@@ -209,7 +209,7 @@ def main():
                                 'Direct Loss', 'Indirect Loss', 'Total Loss', 'Total Gains', 'Annual Reintroduction Rounded', 'Annual Reintroduction Exact'])
                     fail_scenario_written = True
                     warning_logger.warning(f'Scenario {scenario_number}: Created failed scenario output file')
-                with open('failed_scenario.csv', 'a', newline='') as fail_file:
+                with open(output_dir / 'failed_scenario.csv', 'a', newline='') as fail_file:
                         fail_writer = csv.writer(fail_file)
                         fail_writer.writerow([
                             scenario_number,
