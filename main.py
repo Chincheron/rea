@@ -152,10 +152,10 @@ def main():
             main_logger.info(f'Scenario {scenario_number}: Required annual reintroduction calculated (for gain to equal loss)')
 
             #No such thing as partial mussel so round annual mussel reintroduction down to nearest whole number and set cell to value
-            annual_reintroduction_rounded = round(io_sheet[input_cells_config['annual_reintroduction']].value, 0)
-            detail_logger.info(f'Scenario {scenario_number}: Exact annual reintroduction: {annual_reintroduction_rounded}')
-            annual_reintroduction_exact = int(annual_reintroduction_rounded)
-            detail_logger.info(f'Scenario {scenario_number}: Rounded Annual reintroduction: {annual_reintroduction_exact}')
+            annual_reintroduction_exact = round(io_sheet[input_cells_config['annual_reintroduction']].value, 2)
+            detail_logger.info(f'Scenario {scenario_number}: Exact annual reintroduction: {annual_reintroduction_exact}')
+            annual_reintroduction_rounded = int(annual_reintroduction_exact)
+            detail_logger.info(f'Scenario {scenario_number}: Rounded Annual reintroduction: {annual_reintroduction_rounded}')
             io_sheet[input_cells_config['annual_reintroduction']].value =annual_reintroduction_exact
 
             #force excel to recalculate
