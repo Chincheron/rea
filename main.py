@@ -123,12 +123,12 @@ def main():
                           'Direct Loss', 'Indirect Loss', 'Total Loss', 'Total Gains', 'Annual Reintroduction Rounded', 'Annual Reintroduction Exact'])
         main_logger.info(f'Ouput file created')
            
-        for index, row in scenarios.iterrows(): #consider switching to iterating over tuples if performance becomes issue
-            scenario_number = index + 1
-            number_killed = row['number_killed']
-            discount_factor = row['discount_factor']
-            base_year = row['discount_start_year']
-            max_age = row['maximum_age']
+        for scenario_number, row in enumerate(scenarios.itertuples(index=False), start =1): 
+            scenario_number = scenario_number
+            number_killed = row.number_killed
+            discount_factor = row.discount_factor
+            base_year = row.discount_start_year 
+            max_age = row.maximum_age 
             main_logger.info(f'Scenario {scenario_number}: Inputs loaded')
             detail_logger.info(f'Scenario {scenario_number}: Inputs:\n' 
                         f'Number Killed set to {number_killed}\n'
@@ -172,10 +172,10 @@ def main():
             #append results
             writer.writerow([
                 scenario_number,
-                row['number_killed'],
-                row['discount_factor'],
-                row['discount_start_year'],
-                row['maximum_age'],
+                row.number_killed,
+                row.discount_factor,
+                row.discount_start_year,
+                row.maximum_age,
                 direct_loss_total,
                 indirect_loss_total_exclude,
                 loss_total,
@@ -213,10 +213,10 @@ def main():
                         fail_writer = csv.writer(fail_file)
                         fail_writer.writerow([
                             scenario_number,
-                            row['number_killed'],
-                            row['discount_factor'],
-                            row['discount_start_year'],
-                            row['maximum_age'],
+                            row.number_killed,
+                            row.discount_factor,
+                            row.discount_start_year,
+                            row.maximum_age,
                             direct_loss_total,
                             indirect_loss_total_exclude,
                             loss_total,
