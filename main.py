@@ -113,9 +113,9 @@ def main():
     fail_scenario_written = False
 
     #open output csv
-    with open(output_dir / 'output.csv', 'w', newline='') as file:
+    with open(output_dir / 'scenario_output.csv', 'w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(['Number Killed', 'Discount Factor', 'Base Year', 'Maximum Age',
+        writer.writerow(['Scenario', 'Number Killed', 'Discount Factor', 'Base Year', 'Maximum Age',
                           'Direct Loss', 'Indirect Loss', 'Total Loss', 'Total Gains', 'Annual Reintroduction'])
         main_logger.info(f'Ouput file created')
            
@@ -169,6 +169,7 @@ def main():
             
             #append results
             writer.writerow([
+                scenario_number,
                 row['number_killed'],
                 row['discount_factor'],
                 row['discount_start_year'],
@@ -207,7 +208,7 @@ def main():
                 with open('failed_scenario.csv', 'a', newline='') as fail_file:
                         fail_writer = csv.writer(fail_file)
                         fail_writer.writerow([
-                            index + 1,
+                            scenario_number,
                             row['number_killed'],
                             row['discount_factor'],
                             row['discount_start_year'],
