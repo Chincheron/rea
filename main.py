@@ -198,7 +198,7 @@ def main():
 
 
             #check QC tests
-            qc_test = io_sheet['N24'].value
+            qc_test = io_sheet[input_cells_config['qc_test']].value
             main_logger.info(f'Checking whether Excel workbook QC tests pass')
             if qc_test == 'PASS':
                 main_logger.info(f'Scenario {scenario_number}: QC test passed: {qc_test}')
