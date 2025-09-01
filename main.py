@@ -196,7 +196,7 @@ def main():
             qc_test = io_sheet['N24'].value
             main_logger.info(f'Checking whether Excel workbook QC tests pass')
             if qc_test == 'PASS':
-                main_logger.info(f'Scenario {scenario_number}: QC test passed')
+                main_logger.info(f'Scenario {scenario_number}: QC test passed: {qc_test}')
             else: 
                 warning_logger.warning(f'Scenario {scenario_number}: QC test failed')
                 
