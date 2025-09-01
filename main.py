@@ -81,6 +81,10 @@ def main():
     #settings from config
     files = config['files']
     directories = config['directories']
+    excel_config = config['excel']
+    goal_seek_config = config['goal_seek']
+    input_cells_config = excel_config['input_cells']
+    output_cells_config = excel_config['output_cells']
 
     rea_file = files['rea_file']
     scenario_file = files['input_file']
@@ -134,37 +138,35 @@ def main():
                         )
 
             #set cells to scenario inputs
-            io_sheet['M8'].value = number_killed
-            io_sheet['M16'].value = discount_factor
-            io_sheet['M11'].value = base_year
-            io_sheet['M12'].value = max_age
+            io_sheet[input_cells_config['number_killed']].value = number_killed
+            io_sheet[input_cells_config['discount_factor']].value = discount_factor
+            io_sheet[input_cells_config['base_year']].value = base_year
+            io_sheet[input_cells_config['max_age']].value = max_age
             main_logger.info(f'Scenario {scenario_number}: Excel cells set to scenario inputs')
             
             #use goal seek to determine number of annual reintroductions needed for gain to equal loss
-            # Goal Seek: set Goal:Loss ratio (T8) to 1 by changing Annual Mussel Reintroduction (M21)
-            set_cell = io_sheet.range('T8').api 
-            to_value = 1                          
-            by_changing_cell = io_sheet.range('M21').api 
-            set_cell.GoalSeek(Goal=to_value, ChangingCell=by_changing_cell)
+            # Goal Seek: set Goal:Loss ratio to 1 by changing Annual Mussel Reintroduction 
+            set_cell = io_sheet.range(input_cells_config['loss_ratio']).api 
+            by_changing_cell = io_sheet.range(input_cells_config['annual_reintroduction']).api 
+            set_cell.GoalSeek(Goal=goal_seek_config['target_value'], ChangingCell=by_changing_cell)
             main_logger.info(f'Scenario {scenario_number}: Required annual reintroduction calculated (for gain to equal loss)')
 
             #No such thing as partial mussel so round annual mussel reintroduction down to nearest whole number and set cell to value
-            annual_reintroduction_rounded = round(io_sheet['M21'].value, 0)
+            annual_reintroduction_rounded = round(io_sheet[input_cells_config['annual_reintroduction']].value, 0)
             detail_logger.info(f'Scenario {scenario_number}: Exact annual reintroduction: {annual_reintroduction_rounded}')
             annual_reintroduction_exact = int(annual_reintroduction_rounded)
             detail_logger.info(f'Scenario {scenario_number}: Rounded Annual reintroduction: {annual_reintroduction_exact}')
-            io_sheet['M21'].value =annual_reintroduction_exact
+            io_sheet[input_cells_config['annual_reintroduction']].value =annual_reintroduction_exact
 
             #force excel to recalculate
             wb_rea.app.calculate()
             main_logger.info(f'Scenario {scenario_number}: Excel workbook recalculated')
 
             #outputs to variables
-            direct_loss_total = round(io_sheet['T3'].value, 0)
-            indirect_loss_total_exclude = round(io_sheet['T4'].value, 0)
-            loss_total = round(io_sheet['T5'].value, 0)
-            gains_total = round(io_sheet['T7'].value, 0)
-            annual_reintroduction = io_sheet['M21'].value
+            direct_loss_total = round(io_sheet[output_cells_config['direct_loss']].value, 0)
+            indirect_loss_total_exclude = round(io_sheet[output_cells_config['indirect_loss']].value, 0)
+            loss_total = round(io_sheet[output_cells_config['total_loss']].value, 0)
+            gains_total = round(io_sheet[output_cells_config['total_gains']].value, 0)
             main_logger.info(f'Scenario {scenario_number}: Excel outputs copied to variable')
             
             #append results

@@ -1,7 +1,7 @@
 {
   "files": {
     "rea_file": "Mussel REA_v2.0.xlsx",
-    "input_file": "Example_input_file.csv"
+    "input_file": "Scenario_Inputs.csv"
   },
   "directories": {
     "copy_source": "G:\\My Drive\\Paper Prep\\Leslie Matrix\\Versions\\Current Working Version",
@@ -10,7 +10,7 @@
   },
   "excel": {
     "sheet_name": "Debit Inputs",
-    "cells": {
+    "input_cells": {
       "number_killed": "M8",
       "discount_factor": "M16",
       "base_year": "M11",
