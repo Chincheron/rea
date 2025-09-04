@@ -11,7 +11,7 @@ import excel_util as xl
 #TODO 1) modify file copy so that it only copies the specifi input and rea files (pass those file names to function probably)
 #TODO 2) Add flag/option in config file to copy files or directly read from inputs folder   
 
-def load_config(config_path='config.json'):
+def load_config(config_path='test_config.json'):
     """Load configuration from JSON file"""
     with open(config_path, 'r') as f:
         config = json.load(f)
@@ -150,9 +150,7 @@ def main():
             
             #use goal seek to determine number of annual reintroductions needed for gain to equal loss
             # Goal Seek: set Goal:Loss ratio to 1 by changing Annual Mussel Reintroduction 
-            set_cell = io_sheet.range(input_cells_config['loss_ratio']).api 
-            by_changing_cell = io_sheet.range(input_cells_config['annual_reintroduction']).api 
-            set_cell.GoalSeek(Goal=goal_seek_config['target_value'], ChangingCell=by_changing_cell)
+            xl.run_goal_seek(io_sheet, input_cells_config['loss_ratio'], input_cells_config['annual_reintroduction'], goal_seek_config['target_value'])
             main_logger.info(f'Scenario {scenario_number}: Required annual reintroduction calculated (for gain to equal loss)')
 
             #No such thing as partial mussel so round annual mussel reintroduction down to nearest whole number and set cell to value

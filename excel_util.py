@@ -30,3 +30,10 @@ def load_worksheet(wb: xw.Book, sheet_name: str, logger: logging.Logger | None =
         msg = f'Sheet {sheet_name} not found in workbook {wb}'
         logger.error(msg, exc_info=e)
         raise ValueError(msg) from e
+    
+def run_goal_seek(sheet, goal_cell, changing_cell, target_value):
+    '''Run Excel's goal seek for specified paramters'''
+
+    goal_cell = sheet.range(goal_cell).api
+    changing_cell = sheet.range(changing_cell).api
+    goal_cell.GoalSeek(Goal=target_value, ChangingCell=changing_cell)
