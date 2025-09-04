@@ -7,8 +7,9 @@ import logging
 import csv
 import json
 import time
+import excel_util as xl
 #TODO 1) modify file copy so that it only copies the specifi input and rea files (pass those file names to function probably)
-#TODO 2) Add flag/option in config file to copy files or directly read from inputs folder
+#TODO 2) Add flag/option in config file to copy files or directly read from inputs folder   
 
 def load_config(config_path='config.json'):
     """Load configuration from JSON file"""
@@ -109,14 +110,11 @@ def main():
     main_logger.info(f'Loaded {len(scenarios)} from scenarios input file into dataframe')
 
     #load workbook
-    app = xw.App(visible=False)
-    app.display_alerts = False
-    app.screen_updating = False
-    wb_rea = app.books.open(rea_file)
+    wb_rea, app = xl.load_workbook(rea_file)
     main_logger.info(f'REA model workbook loaded ({rea_file})')
 
     #load sheet with inputs and outputs
-    io_sheet = wb_rea.sheets['Debit Inputs']
+    io_sheet = wb_rea.sheets['Matrix Inputs']
     main_logger.info(f'REA input sheet loaded ({io_sheet})')
 
     fail_scenario_written = False
