@@ -88,6 +88,7 @@ def main():
     goal_seek_config = config['goal_seek']
     input_cells_config = excel_config['input_cells']
     output_cells_config = excel_config['output_cells']
+    sheets_config = excel_config['sheet_name']
 
     rea_file = files['rea_file']
     scenario_file = files['input_file']
@@ -114,7 +115,7 @@ def main():
     main_logger.info(f'REA model workbook loaded ({rea_file})')
 
     #load sheet with inputs and outputs
-    io_sheet = wb_rea.sheets['Matrix Inputs']
+    io_sheet = xl.load_worksheet(wb_rea, sheets_config['input_sheet'], warning_logger)
     main_logger.info(f'REA input sheet loaded ({io_sheet})')
 
     fail_scenario_written = False
