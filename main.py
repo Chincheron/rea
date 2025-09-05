@@ -4,7 +4,6 @@ import file_util
 import xlwings as xw
 import pandas as pd
 import logger_setup
-import csv
 import json
 import time
 import excel_util as xl
@@ -60,15 +59,11 @@ def main():
         scenarios = pd.read_csv(scenario_file)
         main_logger.info(f'Loaded {len(scenarios)} from scenarios input file into dataframe')
 
-        #load workbook
+        #load REA model and I/O sheet
         wb_rea, app = xl.load_workbook(rea_file)
         main_logger.info(f'REA model workbook loaded ({rea_file})')
-
-        #load sheet with inputs and outputs
         io_sheet = xl.load_worksheet(wb_rea, sheets_config['input_sheet'], warning_logger)
         main_logger.info(f'REA input sheet loaded ({io_sheet})')
-
-        fail_scenario_written = False
 
         # create initial output csv with headers
         headers = [
@@ -84,11 +79,17 @@ def main():
             'Annual Reintroduction Rounded', 
             'Annual Reintroduction Exact'
             ]
-        
         csv_util.create_output_csv(output_dir / 'scenario_output1.csv', headers, main_logger)
         main_logger.info(f'Ouput file created')
 
+        # for loop runs through different scenarios and:
+        # 1) Sets inputs
+        # 2) Solves for number of annual reintroductions required for gains to equal losses
+        # 3) Reads desired outputs and writes both inputs and outputs to an output csv for later processing
+        # 4) QC check of REA QC tests
         for scenario_number, row in enumerate(scenarios.itertuples(index=False), start =1): 
+            
+            #Step #1: Set inputs
             #read specified input values from the scenarios input dataframe for each scenario
             inputs = {
                 'number_killed' : row.number_killed,
@@ -106,7 +107,7 @@ def main():
                 f'Max age set to {row.maximum_age}'
                 )
             
-            #use goal seek to determine number of annual reintroductions needed for gain to equal loss
+            #Step #2: Solves for number of annual reintroductions required for gains to equal losses
             # Goal Seek: set Goal:Loss ratio to 1 by changing Annual Mussel Reintroduction 
             xl.run_goal_seek(io_sheet, input_cells_config['loss_ratio'], input_cells_config['annual_reintroduction'], goal_seek_config['target_value'])
             main_logger.info(f'Scenario {scenario_number}: Required annual reintroduction calculated (for gain to equal loss)')
@@ -118,6 +119,7 @@ def main():
             detail_logger.info(f'Scenario {scenario_number}: Rounded Annual reintroduction: {annual_reintroduction_rounded}')
             io_sheet[input_cells_config['annual_reintroduction']].value =annual_reintroduction_exact
 
+            #Step #3: Reads desired outputs and writes both inputs and outputs to an output csv for later processing
             #force excel to recalculate
             wb_rea.app.calculate()
             main_logger.info(f'Scenario {scenario_number}: Excel workbook recalculated')
@@ -139,6 +141,7 @@ def main():
             log_lines.append(f'  Annual Reintroduction Exact: {annual_reintroduction_exact}')
             detail_logger.info('\n'.join(log_lines))
 
+            # Step #4: QC check of REA QC tests
             #Excel sheet has multiple qc tests whose results are summarized in a single cell as either 'PASS' or 'FAIL'
             #Check this cell and write I/O to file if 'FAIL' for review
             xl.check_qc(io_sheet, input_cells_config['qc_test'], output_dir, headers, csv_data, scenario_number, main_logger, warning_logger)
@@ -152,6 +155,7 @@ def main():
         app.quit() 
         main_logger.info(f'Closed excel instance')
 
+    #Measure elasped runtime of script
     END_TIME = time.perf_counter()
     RUN_TIME = END_TIME - START_TIME
     RUN_MINUTES = RUN_TIME // 60
