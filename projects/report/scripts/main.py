@@ -78,6 +78,7 @@ def main():
             
             #Step #1: Set inputs
             #read specified input values from the scenarios input dataframe for each scenario
+            #TODO replace this bit with code that sets all inputs included in  config file. Need some source of defaults. Maybe data class?
             inputs = {
                 'number_killed' : row.number_killed,
                 'discount_factor' : row.discount_factor,
