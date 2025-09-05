@@ -25,7 +25,7 @@
       "loss_ratio": "T8",
       "qc_test": "N24"
     },
-    "output_cells": {
+    "output_cells_excluded": {
       "direct_loss": "T3",
       "indirect_loss": "T4",
       "total_loss": "T5",

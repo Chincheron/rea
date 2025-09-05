@@ -41,7 +41,7 @@ def main():
         excel_config = config['excel']
         goal_seek_config = config['goal_seek']
         input_cells_config = excel_config['input_cells']
-        output_cells_config = excel_config['output_cells']
+        output_cells_config = excel_config['output_cells_excluded']
         sheets_config = excel_config['sheet_name']
 
         rea_file = files['rea_file']
