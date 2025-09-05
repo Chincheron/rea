@@ -26,7 +26,7 @@ def main():
 
         # initial constants
         BASE_DIR = Path(__file__).resolve().parents[0] #set to root directory
-        main_logger.info(f'Base directory set')
+        main_logger.info(f'Base directory set: {BASE_DIR}')
         TIMESTAMP = datetime.now().strftime('%Y%m%d_%H%M%S')
         START_TIME = time.perf_counter()
 
@@ -144,7 +144,7 @@ def main():
     #Measure elasped runtime of script
     END_TIME = time.perf_counter()
     RUN_TIME = END_TIME - START_TIME
-    RUN_MINUTES = RUN_TIME // 60
+    RUN_MINUTES = int(RUN_TIME // 60)
     RUN_SECONDS = round((RUN_TIME % 60), 1 )
 
     console_logger.info(f'Script finished. Total Runtime: {RUN_MINUTES} minutes and {RUN_SECONDS} seconds')
