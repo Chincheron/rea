@@ -130,7 +130,7 @@ def main():
             # Step #4: QC check of REA QC tests
             #Excel sheet has multiple qc tests whose results are summarized in a single cell as either 'PASS' or 'FAIL'
             #Check this cell and write I/O to file if 'FAIL' for review
-            # xl.check_qc(io_sheet, input_cells_config['qc_test'], output_dir, headers, csv_data, scenario_number, main_logger, warning_logger)
+            xl.check_qc(io_sheet, input_cells_config['qc_test'], output_dir, csv_data, scenario_number, main_logger, warning_logger)
            
             main_logger.info(f'Scenario {scenario_number}: Scenario completed')
             console_logger.info(f'{scenario_number}/{len(scenarios)} complete')

@@ -59,7 +59,7 @@ def read_excel_outputs(sheet, output_cells, decimals, logger = None):
         outputs[key] = round(sheet[cell].value, decimals)
     return outputs
 
-def check_qc(sheet, qc_cell, output_dir, headers, csv_data, scenario_number, main_logger = None, warning_logger = None):
+def check_qc(sheet, qc_cell, output_dir, csv_data, scenario_number, main_logger = None, warning_logger = None):
     '''Checks value of QC cell in Excel and write input/outputs to file if not "PASS"'''
     
     #setup loggers
@@ -79,7 +79,7 @@ def check_qc(sheet, qc_cell, output_dir, headers, csv_data, scenario_number, mai
         main_logger.warning(f'Scenario {scenario_number}: QC test failed')
         warning_logger.warning(f'Scenario {scenario_number}: QC test failed')
         if not output_file.exists():
-            csv_util.create_output_csv(output_file, headers, warning_logger)
+            csv_util.create_output_csv(output_file, csv_data, warning_logger)
         
         warning_logger.warning(f'Scenario {scenario_number}: Created failed scenario output file')
         csv_util.append_output_to_csv(output_file, csv_data.values())
