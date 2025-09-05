@@ -43,10 +43,10 @@ def main():
         scenario_file = files['input_file']
         copy_dir = directories['copy_source']
         
-        output_dir = f'run_{TIMESTAMP}' / Path(directories['output_folder']) 
+        output_dir = Path(f'run_{TIMESTAMP}') / Path(directories['output_folder'])
         output_dir.mkdir(parents=True, exist_ok=True)
         
-        input_dir = f'run_{TIMESTAMP}' / Path(directories['input_folder']) 
+        input_dir = Path(f'run_{TIMESTAMP}') / Path(directories['input_folder'])
         input_dir.mkdir(parents=True, exist_ok=True)
         scenario_file = input_dir / scenario_file
         rea_file = input_dir / rea_file
