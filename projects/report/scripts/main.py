@@ -85,12 +85,14 @@ def main():
             main_logger.info(f'Scenario {scenario_number}: Inputs loaded')
 
             xl.set_excel_inputs(io_sheet, scenario_inputs_dict, input_cells_config, scenario_number, main_logger)
-            detail_logger.info(f'Scenario {scenario_number}: Inputs:\n' 
-                f'Number Killed set to {row.number_killed}\n'
-                f'Discount factor set to {row.discount_factor}\n'
-                f'Base year set to {row.discount_start_year}\n'
-                f'Max age set to {row.maximum_age}'
-                )
+            #detail logging of scenario inputs
+            log_lines = [f'Scenario {scenario_number}: Excel inputs set:']
+            #read and return all inputs from config file and scenario inputs override
+            for key in input_cells_config.keys():
+                if key in scenario_inputs_dict:
+                    clean_key = key.replace('_', ' ').title()
+                    log_lines.append(f'  {clean_key} set to: {scenario_inputs_dict[key]}')
+            detail_logger.info('\n'.join(log_lines))
             
             #Step #2: Solves for number of annual reintroductions required for gains to equal losses
             # Goal Seek: set Goal:Loss ratio to 1 by changing Annual Mussel Reintroduction 
