@@ -34,14 +34,10 @@
     "output_cells_excluded_yearly": {
       "direct_loss_yearly": "W4:W182",
       "indirect_loss": "X4:X182"
-    }
-  },
-  "goal_seek": {
-    "target_value": 1
-  },
-  "input_values_default": {
+    },
+      "input_values_default": {
       "number_killed": 50000,
-      "start_year_analysis": 2016,
+      "start_year_analysis": 5,
       "start_year_reproduction": 2016,
       "base_year": 2016,
       "max_age": 10,
@@ -50,4 +46,9 @@
       "start_year_reintroduction": 2019,
       "annual_reintroduction": 10000
     }
+
+  },
+  "goal_seek": {
+    "target_value": 1
+  }
 }
