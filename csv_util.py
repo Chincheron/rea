@@ -3,9 +3,12 @@ import csv
 import logging
 from pathlib import Path
 
-def create_output_csv(path: Path | str, headers: list, logger: logging.Logger | None = None):
+def create_output_csv(path: Path | str, headers: list | dict, logger: logging.Logger | None = None):
     '''Create csv and populate with specified headers'''
 
+    if isinstance(headers, dict):
+        headers = list(headers.keys()) 
+        
     path = Path(path)
 
     if logger is None:

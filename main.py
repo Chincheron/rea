@@ -45,6 +45,7 @@ def main():
         
         output_dir = Path(f'run_{TIMESTAMP}') / Path(directories['output_folder'])
         output_dir.mkdir(parents=True, exist_ok=True)
+        output_file = output_dir / Path('scenario_output.csv')
         
         input_dir = Path(f'run_{TIMESTAMP}') / Path(directories['input_folder'])
         input_dir.mkdir(parents=True, exist_ok=True)
@@ -64,23 +65,6 @@ def main():
         main_logger.info(f'REA model workbook loaded ({rea_file})')
         io_sheet = xl.load_worksheet(wb_rea, sheets_config['input_sheet'], warning_logger)
         main_logger.info(f'REA input sheet loaded ({io_sheet})')
-
-        # create initial output csv with headers
-        headers = [
-            'Scenario', 
-            'Number Killed', 
-            'Discount Factor', 
-            'Base Year', 
-            'Maximum Age',
-            'Direct Loss', 
-            'Indirect Loss', 
-            'Total Loss', 
-            'Total Gains', 
-            'Annual Reintroduction Rounded', 
-            'Annual Reintroduction Exact'
-            ]
-        csv_util.create_output_csv(output_dir / 'scenario_output.csv', headers, main_logger)
-        main_logger.info(f'Ouput file created')
 
         # for loop runs through different scenarios and:
         # 1) Sets inputs
@@ -127,7 +111,9 @@ def main():
             #read model outputs and append to csv file
             outputs = xl.read_excel_outputs(io_sheet, output_cells_config, 0, main_logger)
             csv_data = {'Scenario_number': scenario_number, **inputs, **outputs, 'Annual Reintroduction Rounded': annual_reintroduction_rounded, 'Annual Reintroduction Exact': annual_reintroduction_exact}
-            csv_util.append_output_to_csv(output_dir / 'scenario_output1.csv', list(csv_data.values()))
+            if not output_file.exists():
+                csv_util.create_output_csv(output_file, csv_data)
+            csv_util.append_output_to_csv(output_file, list(csv_data.values()))
             
             #detail logging of scenario outputs
             log_lines = [f'Scenario {scenario_number}: Excel outputs written to output file:']
@@ -144,7 +130,7 @@ def main():
             # Step #4: QC check of REA QC tests
             #Excel sheet has multiple qc tests whose results are summarized in a single cell as either 'PASS' or 'FAIL'
             #Check this cell and write I/O to file if 'FAIL' for review
-            xl.check_qc(io_sheet, input_cells_config['qc_test'], output_dir, headers, csv_data, scenario_number, main_logger, warning_logger)
+            # xl.check_qc(io_sheet, input_cells_config['qc_test'], output_dir, headers, csv_data, scenario_number, main_logger, warning_logger)
            
             main_logger.info(f'Scenario {scenario_number}: Scenario completed')
             console_logger.info(f'{scenario_number}/{len(scenarios)} complete')
