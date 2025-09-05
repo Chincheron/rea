@@ -73,7 +73,7 @@ def check_qc(sheet, qc_cell, output_dir, headers, csv_data, scenario_number, mai
     qc_test = sheet[qc_cell].value
 
     main_logger.info(f'Checking whether Excel workbook QC tests pass')
-    if qc_test != 'PASS':
+    if qc_test == 'PASS':
         main_logger.info(f'Scenario {scenario_number}: QC test passed: {qc_test}')
     else: 
         main_logger.warning(f'Scenario {scenario_number}: QC test failed')
