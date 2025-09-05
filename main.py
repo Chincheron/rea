@@ -128,25 +128,22 @@ def main():
         main_logger.info(f'Ouput file created')
            
         for scenario_number, row in enumerate(scenarios.itertuples(index=False), start =1): 
-            scenario_number = scenario_number
-            number_killed = row.number_killed
-            discount_factor = row.discount_factor
-            base_year = row.discount_start_year 
-            max_age = row.maximum_age 
+            #read specified input values from the scenarios input dataframe for each scenario
+            inputs = {
+                'number_killed' : row.number_killed,
+                'discount_factor' : row.discount_factor,
+                'base_year' : row.discount_start_year, 
+                "max_age" : row.maximum_age
+            }  
             main_logger.info(f'Scenario {scenario_number}: Inputs loaded')
-            detail_logger.info(f'Scenario {scenario_number}: Inputs:\n' 
-                        f'Number Killed set to {number_killed}\n'
-                        f'Discount factor set to {discount_factor}\n'
-                        f'Base year set to {base_year}\n'
-                        f'Max age set to {max_age}'
-                        )
 
-            #set cells to scenario inputs
-            io_sheet[input_cells_config['number_killed']].value = number_killed
-            io_sheet[input_cells_config['discount_factor']].value = discount_factor
-            io_sheet[input_cells_config['base_year']].value = base_year
-            io_sheet[input_cells_config['max_age']].value = max_age
-            main_logger.info(f'Scenario {scenario_number}: Excel cells set to scenario inputs')
+            xl.set_excel_inputs(io_sheet, inputs, input_cells_config, scenario_number, main_logger)
+            detail_logger.info(f'Scenario {scenario_number}: Inputs:\n' 
+                f'Number Killed set to {row.number_killed}\n'
+                f'Discount factor set to {row.discount_factor}\n'
+                f'Base year set to {row.discount_start_year}\n'
+                f'Max age set to {row.maximum_age}'
+                )
             
             #use goal seek to determine number of annual reintroductions needed for gain to equal loss
             # Goal Seek: set Goal:Loss ratio to 1 by changing Annual Mussel Reintroduction 

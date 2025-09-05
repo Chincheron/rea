@@ -13,3 +13,5 @@ print(type(sheet))
 
 wb.close()
 app.quit()
+
+excel_util.set_excel_inputs(sheet, {"number_killed": 500}, {"number_killed": "B2"}, 1)

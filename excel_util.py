@@ -37,3 +37,16 @@ def run_goal_seek(sheet, goal_cell, changing_cell, target_value):
     goal_cell = sheet.range(goal_cell).api
     changing_cell = sheet.range(changing_cell).api
     goal_cell.GoalSeek(Goal=target_value, ChangingCell=changing_cell)
+
+def set_excel_inputs(sheet, input_values, input_cells, scenario_number, logger = None):
+        '''Set input cells to specified values'''
+
+        if logger is None:
+            logger = logging.getLogger(__name__)
+
+        for key, value in input_values.items():
+            sheet[input_cells[key]].value = value
+
+        logger.info(f'Scenario {scenario_number}: Excel cells set to scenario inputs')
+
+
