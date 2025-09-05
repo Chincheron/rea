@@ -1,13 +1,13 @@
 from pathlib import Path
 from datetime import datetime
-import file_util
+import util.file_util as file_util
 import xlwings as xw
 import pandas as pd
-import logger_setup
+import util.logger_setup as logger_setup
 import json
 import time
-import excel_util as xl
-import csv_util
+import util.excel_util as xl
+import util.csv_util as csv_util
 
 #TODO 1) modify file copy so that it only copies the specifi input and rea files (pass those file names to function probably)
 #TODO 2) Add flag/option in config file to copy files or directly read from inputs folder   

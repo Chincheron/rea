@@ -2,7 +2,7 @@
 import xlwings as xw
 from pathlib import Path
 import logging
-import csv_util
+import util.csv_util as csv_util
 
 def load_workbook(workbook: Path |str, visible: bool = False) -> tuple[xw.Book, xw.App]:
     '''Loads Excel file using xlwing in background (headless) mode'''
