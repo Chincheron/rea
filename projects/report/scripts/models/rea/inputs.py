@@ -1,5 +1,6 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, asdict
 import json
+import pandas as pd
 
 def load_config(config_path='config.json'):
     """Load configuration from JSON file"""
@@ -23,9 +24,30 @@ class REAScenarioInputs:
     base_year: int = field(default=default_values['base_year'])
     max_age: int = field(default=default_values['max_age'])
     discount_factor: float = field(default=default_values['discount_factor'])
-    base_year: int = field(default=default_values['base_year'])
     no_reintroduction_years: int = field(default=default_values['no_reintroduction_years'])
     start_year_reintroduction: int = field(default=default_values['start_year_reintroduction'])
     annual_reintroduction: int = field(default=default_values['annual_reintroduction'])
+
+    @classmethod
+    def create_from_row(cls, row):
+        """
+        Create a REAScenarioInputs object:
+        - start with defaults from config
+        - override any attributes that exist in the row
+        """
+        obj = cls()  # start with all defaults
+        for field_name in obj.__dataclass_fields__:
+            if hasattr(row, field_name) and pd.notna(getattr(row, field_name)):
+                setattr(obj, field_name, getattr(row, field_name))
+        return obj
+
+    def to_dict(self):
+        return asdict(self)
+
+
+test = REAScenarioInputs()
+test = test.to_dict()
+print(test)
+print(type(test))
 
 

@@ -8,6 +8,7 @@ import json
 import time
 import util.excel_util as xl
 import util.csv_util as csv_util
+import models.rea.inputs as rea_input_class
 
 #TODO 1) modify file copy so that it only copies the specifi input and rea files (pass those file names to function probably)
 #TODO 2) Add flag/option in config file to copy files or directly read from inputs folder   
@@ -75,19 +76,15 @@ def main():
         # 3) Reads desired outputs and writes both inputs and outputs to an output csv for later processing
         # 4) QC check of REA QC tests
         for scenario_number, row in enumerate(scenarios.itertuples(index=False), start =1): 
-            
             #Step #1: Set inputs
-            #read specified input values from the scenarios input dataframe for each scenario
-            #TODO replace this bit with code that sets all inputs included in  config file. Need some source of defaults. Maybe data class?
-            inputs = {
-                'number_killed' : row.number_killed,
-                'discount_factor' : row.discount_factor,
-                'base_year' : row.discount_start_year, 
-                "max_age" : row.maximum_age
-            }  
+            # Create scenario inputs class with defaults values
+            # and override specified input values from the scenarios input dataframe for each scenario
+            scenario_inputs = rea_input_class.REAScenarioInputs.create_from_row(row)
+            #must conver to dict for easier reading into later functions
+            scenario_inputs_dict = scenario_inputs.to_dict()
             main_logger.info(f'Scenario {scenario_number}: Inputs loaded')
 
-            xl.set_excel_inputs(io_sheet, inputs, input_cells_config, scenario_number, main_logger)
+            xl.set_excel_inputs(io_sheet, scenario_inputs_dict, input_cells_config, scenario_number, main_logger)
             detail_logger.info(f'Scenario {scenario_number}: Inputs:\n' 
                 f'Number Killed set to {row.number_killed}\n'
                 f'Discount factor set to {row.discount_factor}\n'
@@ -114,7 +111,7 @@ def main():
 
             #read model outputs and append to csv file
             outputs = xl.read_excel_outputs(io_sheet, output_cells_config, 0, main_logger)
-            csv_data = {'Scenario_number': scenario_number, **inputs, **outputs, 'Annual Reintroduction Rounded': annual_reintroduction_rounded, 'Annual Reintroduction Exact': annual_reintroduction_exact}
+            csv_data = {'Scenario_number': scenario_number, **scenario_inputs_dict, **outputs, 'Annual Reintroduction Rounded': annual_reintroduction_rounded, 'Annual Reintroduction Exact': annual_reintroduction_exact}
             if not output_file.exists():
                 csv_util.create_output_csv(output_file, csv_data)
             csv_util.append_output_to_csv(output_file, list(csv_data.values()))
