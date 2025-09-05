@@ -127,109 +127,116 @@ def main():
                           'Direct Loss', 'Indirect Loss', 'Total Loss', 'Total Gains', 'Annual Reintroduction Rounded', 'Annual Reintroduction Exact'])
         main_logger.info(f'Ouput file created')
            
-        for scenario_number, row in enumerate(scenarios.itertuples(index=False), start =1): 
-            scenario_number = scenario_number
-            number_killed = row.number_killed
-            discount_factor = row.discount_factor
-            base_year = row.discount_start_year 
-            max_age = row.maximum_age 
-            main_logger.info(f'Scenario {scenario_number}: Inputs loaded')
-            detail_logger.info(f'Scenario {scenario_number}: Inputs:\n' 
-                        f'Number Killed set to {number_killed}\n'
-                        f'Discount factor set to {discount_factor}\n'
-                        f'Base year set to {base_year}\n'
-                        f'Max age set to {max_age}'
-                        )
+    for scenario_number, row in enumerate(scenarios.itertuples(index=False), start =1): 
+        scenario_number = scenario_number
+        number_killed = row.number_killed
+        discount_factor = row.discount_factor
+        base_year = row.discount_start_year 
+        max_age = row.maximum_age 
+        main_logger.info(f'Scenario {scenario_number}: Inputs loaded')
+        detail_logger.info(f'Scenario {scenario_number}: Inputs:\n' 
+                    f'Number Killed set to {number_killed}\n'
+                    f'Discount factor set to {discount_factor}\n'
+                    f'Base year set to {base_year}\n'
+                    f'Max age set to {max_age}'
+                    )
 
-            #set cells to scenario inputs
-            io_sheet[input_cells_config['number_killed']].value = number_killed
-            io_sheet[input_cells_config['discount_factor']].value = discount_factor
-            io_sheet[input_cells_config['base_year']].value = base_year
-            io_sheet[input_cells_config['max_age']].value = max_age
-            main_logger.info(f'Scenario {scenario_number}: Excel cells set to scenario inputs')
+        #set cells to scenario inputs
+        io_sheet[input_cells_config['number_killed']].value = number_killed
+        io_sheet[input_cells_config['discount_factor']].value = discount_factor
+        io_sheet[input_cells_config['base_year']].value = base_year
+        io_sheet[input_cells_config['max_age']].value = max_age
+        main_logger.info(f'Scenario {scenario_number}: Excel cells set to scenario inputs')
+        
+        #use goal seek to determine number of annual reintroductions needed for gain to equal loss
+        # Goal Seek: set Goal:Loss ratio to 1 by changing Annual Mussel Reintroduction 
+        xl.run_goal_seek(io_sheet, input_cells_config['loss_ratio'], input_cells_config['annual_reintroduction'], goal_seek_config['target_value'])
+        main_logger.info(f'Scenario {scenario_number}: Required annual reintroduction calculated (for gain to equal loss)')
+
+        #No such thing as partial mussel so round annual mussel reintroduction down to nearest whole number and set cell to value
+        annual_reintroduction_exact = round(io_sheet[input_cells_config['annual_reintroduction']].value, 2)
+        detail_logger.info(f'Scenario {scenario_number}: Exact annual reintroduction: {annual_reintroduction_exact}')
+        annual_reintroduction_rounded = int(annual_reintroduction_exact)
+        detail_logger.info(f'Scenario {scenario_number}: Rounded Annual reintroduction: {annual_reintroduction_rounded}')
+        io_sheet[input_cells_config['annual_reintroduction']].value =annual_reintroduction_exact
+
+        #force excel to recalculate
+        wb_rea.app.calculate()
+        main_logger.info(f'Scenario {scenario_number}: Excel workbook recalculated')
+
+        #outputs to variables
+        direct_loss_total = round(io_sheet[output_cells_config['direct_loss']].value, 0)
+        indirect_loss_total_exclude = round(io_sheet[output_cells_config['indirect_loss']].value, 0)
+        loss_total = round(io_sheet[output_cells_config['total_loss']].value, 0)
+        gains_total = round(io_sheet[output_cells_config['total_gains']].value, 0)
+        main_logger.info(f'Scenario {scenario_number}: Excel outputs copied to variable')
+        
+        #append results
+        writer.writerow([
+            scenario_number,
+            row.number_killed,
+            row.discount_factor,
+            row.discount_start_year,
+            row.maximum_age,
+            direct_loss_total,
+            indirect_loss_total_exclude,
+            loss_total,
+            gains_total,
+            annual_reintroduction_rounded,
+            annual_reintroduction_exact
+        ])
+        main_logger.info(f'Scenario {scenario_number}: Excel outputs written to output file')
+        detail_logger.info(f'Scenario {scenario_number}: Excel outputs written to output file:\n' 
+                    f'  Direct loss: {direct_loss_total}\n'
+                    f'  Indirect loss: {indirect_loss_total_exclude}\n'
+                    f'  Total Loss: {loss_total}\n'
+                    f'  Gain: {gains_total}\n'
+                    f'  Annual Reintroduction Rounded: {annual_reintroduction_rounded}\n'
+                    f'  Annual Reintroduction Exact: {annual_reintroduction_exact}\n'
+                    )
+
+
+        #check QC tests
+        qc_test = io_sheet[input_cells_config['qc_test']].value
+        main_logger.info(f'Checking whether Excel workbook QC tests pass')
+        if qc_test == 'PASS':
+            main_logger.info(f'Scenario {scenario_number}: QC test passed: {qc_test}')
+        else: 
+            warning_logger.warning(f'Scenario {scenario_number}: QC test failed')
             
+<<<<<<< Updated upstream
             #use goal seek to determine number of annual reintroductions needed for gain to equal loss
             # Goal Seek: set Goal:Loss ratio to 1 by changing Annual Mussel Reintroduction 
             xl.run_goal_seek(io_sheet, input_cells_config['loss_ratio'], input_cells_config['annual_reintroduction'], goal_seek_config['target_value'])
             main_logger.info(f'Scenario {scenario_number}: Required annual reintroduction calculated (for gain to equal loss)')
+=======
+            if fail_scenario_written == False:
+                with open(output_dir / 'failed_scenario.csv', 'w', newline='') as fail_file:
+                    fail_writer = csv.writer(fail_file)
+                    fail_writer.writerow(['Scenario', 'Number Killed', 'Discount Factor', 'Base Year', 'Maximum Age',
+                            'Direct Loss', 'Indirect Loss', 'Total Loss', 'Total Gains', 'Annual Reintroduction Rounded', 'Annual Reintroduction Exact'])
+                fail_scenario_written = True
+                warning_logger.warning(f'Scenario {scenario_number}: Created failed scenario output file')
+            with open(output_dir / 'failed_scenario.csv', 'a', newline='') as fail_file:
+                    fail_writer = csv.writer(fail_file)
+                    fail_writer.writerow([
+                        scenario_number,
+                        row.number_killed,
+                        row.discount_factor,
+                        row.discount_start_year,
+                        row.maximum_age,
+                        direct_loss_total,
+                        indirect_loss_total_exclude,
+                        loss_total,
+                        gains_total,
+                        annual_reintroduction_rounded,
+                        annual_reintroduction_exact
+                    ])
+                    warning_logger.warning(f'Scenario {scenario_number}: Failed scenario inputs/outputs written to failed scenario outputs file ')
+>>>>>>> Stashed changes
 
-            #No such thing as partial mussel so round annual mussel reintroduction down to nearest whole number and set cell to value
-            annual_reintroduction_exact = round(io_sheet[input_cells_config['annual_reintroduction']].value, 2)
-            detail_logger.info(f'Scenario {scenario_number}: Exact annual reintroduction: {annual_reintroduction_exact}')
-            annual_reintroduction_rounded = int(annual_reintroduction_exact)
-            detail_logger.info(f'Scenario {scenario_number}: Rounded Annual reintroduction: {annual_reintroduction_rounded}')
-            io_sheet[input_cells_config['annual_reintroduction']].value =annual_reintroduction_exact
-
-            #force excel to recalculate
-            wb_rea.app.calculate()
-            main_logger.info(f'Scenario {scenario_number}: Excel workbook recalculated')
-
-            #outputs to variables
-            direct_loss_total = round(io_sheet[output_cells_config['direct_loss']].value, 0)
-            indirect_loss_total_exclude = round(io_sheet[output_cells_config['indirect_loss']].value, 0)
-            loss_total = round(io_sheet[output_cells_config['total_loss']].value, 0)
-            gains_total = round(io_sheet[output_cells_config['total_gains']].value, 0)
-            main_logger.info(f'Scenario {scenario_number}: Excel outputs copied to variable')
-            
-            #append results
-            writer.writerow([
-                scenario_number,
-                row.number_killed,
-                row.discount_factor,
-                row.discount_start_year,
-                row.maximum_age,
-                direct_loss_total,
-                indirect_loss_total_exclude,
-                loss_total,
-                gains_total,
-                annual_reintroduction_rounded,
-                annual_reintroduction_exact
-            ])
-            main_logger.info(f'Scenario {scenario_number}: Excel outputs written to output file')
-            detail_logger.info(f'Scenario {scenario_number}: Excel outputs written to output file:\n' 
-                        f'  Direct loss: {direct_loss_total}\n'
-                        f'  Indirect loss: {indirect_loss_total_exclude}\n'
-                        f'  Total Loss: {loss_total}\n'
-                        f'  Gain: {gains_total}\n'
-                        f'  Annual Reintroduction Rounded: {annual_reintroduction_rounded}\n'
-                        f'  Annual Reintroduction Exact: {annual_reintroduction_exact}\n'
-                        )
-
-
-            #check QC tests
-            qc_test = io_sheet[input_cells_config['qc_test']].value
-            main_logger.info(f'Checking whether Excel workbook QC tests pass')
-            if qc_test == 'PASS':
-                main_logger.info(f'Scenario {scenario_number}: QC test passed: {qc_test}')
-            else: 
-                warning_logger.warning(f'Scenario {scenario_number}: QC test failed')
-                
-                if fail_scenario_written == False:
-                    with open(output_dir / 'failed_scenario.csv', 'w', newline='') as fail_file:
-                        fail_writer = csv.writer(fail_file)
-                        fail_writer.writerow(['Scenario', 'Number Killed', 'Discount Factor', 'Base Year', 'Maximum Age',
-                                'Direct Loss', 'Indirect Loss', 'Total Loss', 'Total Gains', 'Annual Reintroduction Rounded', 'Annual Reintroduction Exact'])
-                    fail_scenario_written = True
-                    warning_logger.warning(f'Scenario {scenario_number}: Created failed scenario output file')
-                with open(output_dir / 'failed_scenario.csv', 'a', newline='') as fail_file:
-                        fail_writer = csv.writer(fail_file)
-                        fail_writer.writerow([
-                            scenario_number,
-                            row.number_killed,
-                            row.discount_factor,
-                            row.discount_start_year,
-                            row.maximum_age,
-                            direct_loss_total,
-                            indirect_loss_total_exclude,
-                            loss_total,
-                            gains_total,
-                            annual_reintroduction_rounded,
-                            annual_reintroduction_exact
-                        ])
-                        warning_logger.warning(f'Scenario {scenario_number}: Failed scenario inputs/outputs written to failed scenario outputs file ')
-
-            main_logger.info(f'Scenario {scenario_number}: Scenario completed')
-            console_logger.info(f'{scenario_number}/{len(scenarios)} complete')
+        main_logger.info(f'Scenario {scenario_number}: Scenario completed')
+        console_logger.info(f'{scenario_number}/{len(scenarios)} complete')
 
     #close excel instance
     wb_rea.close()
