@@ -73,64 +73,73 @@ def setup_loggers():
     return main_logger, warning_logger, detail_logger, console_logger
 
 def main():
-    config = load_config()
+    try:
+        config = load_config()
 
-    main_logger, warning_logger, detail_logger, console_logger  = setup_loggers()
+        main_logger, warning_logger, detail_logger, console_logger  = setup_loggers()
 
-    # initial constants
-    BASE_DIR = Path(__file__).resolve().parents[0] #set to root directory
-    main_logger.info(f'Base directory set')
-    TIMESTAMP = datetime.now().strftime('%Y%m%d_%H%M%S')
-    START_TIME = time.perf_counter()
+        # initial constants
+        BASE_DIR = Path(__file__).resolve().parents[0] #set to root directory
+        main_logger.info(f'Base directory set')
+        TIMESTAMP = datetime.now().strftime('%Y%m%d_%H%M%S')
+        START_TIME = time.perf_counter()
 
-    #settings from config
-    files = config['files']
-    directories = config['directories']
-    excel_config = config['excel']
-    goal_seek_config = config['goal_seek']
-    input_cells_config = excel_config['input_cells']
-    output_cells_config = excel_config['output_cells']
-    sheets_config = excel_config['sheet_name']
+        #settings from config
+        files = config['files']
+        directories = config['directories']
+        excel_config = config['excel']
+        goal_seek_config = config['goal_seek']
+        input_cells_config = excel_config['input_cells']
+        output_cells_config = excel_config['output_cells']
+        sheets_config = excel_config['sheet_name']
 
-    rea_file = files['rea_file']
-    scenario_file = files['input_file']
-    copy_dir = directories['copy_source']
-    
-    output_dir = f'run_{TIMESTAMP}' / Path(directories['output_folder']) 
-    output_dir.mkdir(parents=True, exist_ok=True)
-    
-    input_dir = f'run_{TIMESTAMP}' / Path(directories['input_folder']) 
-    input_dir.mkdir(parents=True, exist_ok=True)
-    scenario_file = input_dir / scenario_file
-    rea_file = input_dir / rea_file
+        rea_file = files['rea_file']
+        scenario_file = files['input_file']
+        copy_dir = directories['copy_source']
+        
+        output_dir = f'run_{TIMESTAMP}' / Path(directories['output_folder']) 
+        output_dir.mkdir(parents=True, exist_ok=True)
+        
+        input_dir = f'run_{TIMESTAMP}' / Path(directories['input_folder']) 
+        input_dir.mkdir(parents=True, exist_ok=True)
+        scenario_file = input_dir / scenario_file
+        rea_file = input_dir / rea_file
 
-    #copy current REA version file 
-    file_util.copy_input_files(copy_dir, input_dir)
-    main_logger.info(f'Input files copied from current working version folder')
+        #copy current REA version file 
+        file_util.copy_input_files(copy_dir, input_dir)
+        main_logger.info(f'Input files copied from current working version folder')
 
-    #load scenario input file
-    scenarios = pd.read_csv(scenario_file)
-    main_logger.info(f'Loaded {len(scenarios)} from scenarios input file into dataframe')
+        #load scenario input file
+        scenarios = pd.read_csv(scenario_file)
+        main_logger.info(f'Loaded {len(scenarios)} from scenarios input file into dataframe')
 
-    #load workbook
-    wb_rea, app = xl.load_workbook(rea_file)
-    main_logger.info(f'REA model workbook loaded ({rea_file})')
+        #load workbook
+        wb_rea, app = xl.load_workbook(rea_file)
+        main_logger.info(f'REA model workbook loaded ({rea_file})')
 
-    #load sheet with inputs and outputs
-    io_sheet = xl.load_worksheet(wb_rea, sheets_config['input_sheet'], warning_logger)
-    main_logger.info(f'REA input sheet loaded ({io_sheet})')
+        #load sheet with inputs and outputs
+        io_sheet = xl.load_worksheet(wb_rea, sheets_config['input_sheet'], warning_logger)
+        main_logger.info(f'REA input sheet loaded ({io_sheet})')
 
-    fail_scenario_written = False
+        fail_scenario_written = False
 
-    #open output csv
-    with open(output_dir / 'scenario_output.csv', 'w', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow(['Scenario', 'Number Killed', 'Discount Factor', 'Base Year', 'Maximum Age',
-                          'Direct Loss', 'Indirect Loss', 'Total Loss', 'Total Gains', 'Annual Reintroduction Rounded', 'Annual Reintroduction Exact'])
+        # create initial output csv with headers
+        headers = [
+            'Scenario', 
+            'Number Killed', 
+            'Discount Factor', 
+            'Base Year', 
+            'Maximum Age',
+            'Direct Loss', 
+            'Indirect Loss', 
+            'Total Loss', 
+            'Total Gains', 
+            'Annual Reintroduction Rounded', 
+            'Annual Reintroduction Exact'
+            ]
+        
+        csv_util.create_output_csv(output_dir / 'scenario_output1.csv', headers, main_logger)
         main_logger.info(f'Ouput file created')
-
-        csv_util.create_output_csv(output_dir / 'scenario_output1.csv', ['Scenario', 'Number Killed', 'Discount Factor', 'Base Year', 'Maximum Age',
-                          'Direct Loss', 'Indirect Loss', 'Total Loss', 'Total Gains', 'Annual Reintroduction Rounded', 'Annual Reintroduction Exact'])
 
         for scenario_number, row in enumerate(scenarios.itertuples(index=False), start =1): 
             #read specified input values from the scenarios input dataframe for each scenario
@@ -166,42 +175,22 @@ def main():
             wb_rea.app.calculate()
             main_logger.info(f'Scenario {scenario_number}: Excel workbook recalculated')
 
-            #outputs to variables
-            direct_loss_total = round(io_sheet[output_cells_config['direct_loss']].value, 0)
-            indirect_loss_total_exclude = round(io_sheet[output_cells_config['indirect_loss']].value, 0)
-            loss_total = round(io_sheet[output_cells_config['total_loss']].value, 0)
-            gains_total = round(io_sheet[output_cells_config['total_gains']].value, 0)
-            main_logger.info(f'Scenario {scenario_number}: Excel outputs copied to variable')
-
+            #read model outputs and append to csv file
             outputs = xl.read_excel_outputs(io_sheet, output_cells_config, 0, main_logger)
             csv_data = {'Scenario_number': scenario_number, **inputs, **outputs, 'Annual Reintroduction Rounded': annual_reintroduction_rounded, 'Annual Reintroduction Exact': annual_reintroduction_exact}
-            print(csv_data)
             csv_util.append_output_to_csv(output_dir / 'scenario_output1.csv', list(csv_data.values()))
             
-            # #append results
-            # writer.writerow([
-            #     scenario_number,
-            #     row.number_killed,
-            #     row.discount_factor,
-            #     row.discount_start_year,
-            #     row.maximum_age,
-            #     direct_loss_total,
-            #     indirect_loss_total_exclude,
-            #     loss_total,
-            #     gains_total,
-            #     annual_reintroduction_rounded,
-            #     annual_reintroduction_exact
-            # ])
-            main_logger.info(f'Scenario {scenario_number}: Excel outputs written to output file')
-            detail_logger.info(f'Scenario {scenario_number}: Excel outputs written to output file:\n' 
-                        f'  Direct loss: {direct_loss_total}\n'
-                        f'  Indirect loss: {indirect_loss_total_exclude}\n'
-                        f'  Total Loss: {loss_total}\n'
-                        f'  Gain: {gains_total}\n'
-                        f'  Annual Reintroduction Rounded: {annual_reintroduction_rounded}\n'
-                        f'  Annual Reintroduction Exact: {annual_reintroduction_exact}\n'
-                        )
-
+            #detail logging of scenario outputs
+            log_lines = [f'Scenario {scenario_number}: Excel outputs written to output file:']
+            #read and return all outputs from config file
+            for key in output_cells_config.keys():
+                if key in csv_data:
+                    clean_key = key.replace('_', ' ').title()
+                    log_lines.append(f'  {clean_key}: {csv_data[key]}')
+            #inclue outputs created in processing (not in config)
+            log_lines.append(f'  Annual Reintroduction Rounded: {annual_reintroduction_rounded}')
+            log_lines.append(f'  Annual Reintroduction Exact: {annual_reintroduction_exact}')
+            detail_logger.info('\n'.join(log_lines))
 
             #check QC tests
             qc_test = io_sheet[input_cells_config['qc_test']].value
@@ -237,11 +226,12 @@ def main():
 
             main_logger.info(f'Scenario {scenario_number}: Scenario completed')
             console_logger.info(f'{scenario_number}/{len(scenarios)} complete')
-
-    #close excel instance
-    wb_rea.close()
-    app.quit() 
-    main_logger.info(f'Closed excel instance')
+            
+    finally:
+        #close excel instance
+        wb_rea.close()
+        app.quit() 
+        main_logger.info(f'Closed excel instance')
 
     END_TIME = time.perf_counter()
     RUN_TIME = END_TIME - START_TIME

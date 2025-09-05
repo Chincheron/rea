@@ -18,7 +18,8 @@ def create_output_csv(path: Path | str, headers: list, logger: logging.Logger | 
 
 def append_output_to_csv(path, row_data):
     '''Append data to csv. Make sure data matches'''
-    
+    print(row_data)
     with open(path, 'a', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(row_data)
+        writer.writerow(list(row_data))
+        
