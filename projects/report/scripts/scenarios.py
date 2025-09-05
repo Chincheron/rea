@@ -12,6 +12,8 @@ import models.rea.inputs as rea_input_class
 
 #TODO 1) modify file copy so that it only copies the specifi input and rea files (pass those file names to function probably)
 #TODO 2) Add flag/option in config file to copy files or directly read from inputs folder   
+#TODO REfactor so that main can be called: pull CONSTANTS to constants file; incorporate load config into main?;
+#       
 
 def load_config(config_path='test_config.json'):
     """Load configuration from JSON file"""
