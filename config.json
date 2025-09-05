@@ -38,5 +38,16 @@
   },
   "goal_seek": {
     "target_value": 1
-  }
+  },
+  "input_values_default": {
+      "number_killed": 50000,
+      "start_year_analysis": 2016,
+      "start_year_reproduction": 2016,
+      "base_year": 2016,
+      "max_age": 10,
+      "discount_factor": 1.03,
+      "no_reintroduction_years": 10,
+      "start_year_reintroduction": 2019,
+      "annual_reintroduction": 10000
+    }
 }
