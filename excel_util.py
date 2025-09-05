@@ -49,4 +49,11 @@ def set_excel_inputs(sheet, input_values, input_cells, scenario_number, logger =
 
         logger.info(f'Scenario {scenario_number}: Excel cells set to scenario inputs')
 
+def read_excel_outputs(sheet, output_cells, decimals, logger = None):
+    '''Read desired output cells from excel workbook'''
+    
+    outputs = {}
 
+    for key, cell in output_cells.items():
+        outputs[key] = round(sheet[cell].value, decimals)
+    return outputs
