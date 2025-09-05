@@ -15,3 +15,10 @@ def create_output_csv(path: Path | str, headers: list, logger: logging.Logger | 
         writer = csv.writer(file)
         writer.writerow(headers)
         logger.info(f'Ouput file created')
+
+def append_output_to_csv(path, row_data):
+    '''Append data to csv. Make sure data matches'''
+    
+    with open(path, 'a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(row_data)
