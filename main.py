@@ -192,38 +192,10 @@ def main():
             log_lines.append(f'  Annual Reintroduction Exact: {annual_reintroduction_exact}')
             detail_logger.info('\n'.join(log_lines))
 
-            #check QC tests
-            qc_test = io_sheet[input_cells_config['qc_test']].value
-            main_logger.info(f'Checking whether Excel workbook QC tests pass')
-            if qc_test == 'PASS':
-                main_logger.info(f'Scenario {scenario_number}: QC test passed: {qc_test}')
-            else: 
-                warning_logger.warning(f'Scenario {scenario_number}: QC test failed')
-                
-                if fail_scenario_written == False:
-                    with open(output_dir / 'failed_scenario.csv', 'w', newline='') as fail_file:
-                        fail_writer = csv.writer(fail_file)
-                        fail_writer.writerow(['Scenario', 'Number Killed', 'Discount Factor', 'Base Year', 'Maximum Age',
-                                'Direct Loss', 'Indirect Loss', 'Total Loss', 'Total Gains', 'Annual Reintroduction Rounded', 'Annual Reintroduction Exact'])
-                    fail_scenario_written = True
-                    warning_logger.warning(f'Scenario {scenario_number}: Created failed scenario output file')
-                with open(output_dir / 'failed_scenario.csv', 'a', newline='') as fail_file:
-                        fail_writer = csv.writer(fail_file)
-                        fail_writer.writerow([
-                            scenario_number,
-                            row.number_killed,
-                            row.discount_factor,
-                            row.discount_start_year,
-                            row.maximum_age,
-                            direct_loss_total,
-                            indirect_loss_total_exclude,
-                            loss_total,
-                            gains_total,
-                            annual_reintroduction_rounded,
-                            annual_reintroduction_exact
-                        ])
-                        warning_logger.warning(f'Scenario {scenario_number}: Failed scenario inputs/outputs written to failed scenario outputs file ')
-
+            #Excel sheet has multiple qc tests whose results are summarized in a single cell as either 'PASS' or 'FAIL'
+            #Check this cell and write I/O to file if 'FAIL' for review
+            xl.check_qc(io_sheet, input_cells_config['qc_test'], output_dir, headers, csv_data, scenario_number, main_logger, warning_logger)
+           
             main_logger.info(f'Scenario {scenario_number}: Scenario completed')
             console_logger.info(f'{scenario_number}/{len(scenarios)} complete')
             
