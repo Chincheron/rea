@@ -21,15 +21,17 @@ def load_config(config_path='test_config.json'):
 
 def main():
     try:
-        config = load_config()
-
         # initial constants
+        CONFIG_FILE = 'scenarios_config.json'
         REPO_DIR = file_util.find_repository_root()
         PROJECT_BASE_DIR = (REPO_DIR / 'projects' / 'report')
+        CONFIG_DIR = PROJECT_BASE_DIR / 'config'
+        CONFIG_PATH = CONFIG_DIR / CONFIG_FILE
         RESULTS_DIR = (PROJECT_BASE_DIR / 'results')
         TIMESTAMP = datetime.now().strftime('%Y%m%d_%H%M%S')
         START_TIME = time.perf_counter()
 
+        config = load_config(CONFIG_PATH)
         #setup logger
         main_logger, warning_logger, detail_logger, console_logger  = logger_setup.setup_loggers(RESULTS_DIR)
 
