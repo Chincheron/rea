@@ -22,13 +22,15 @@ def main():
     try:
         config = load_config()
 
-        main_logger, warning_logger, detail_logger, console_logger  = logger_setup.setup_loggers()
-
         # initial constants
-        BASE_DIR = Path(__file__).resolve().parents[0] #set to root directory
-        main_logger.info(f'Base directory set: {BASE_DIR}')
+        REPO_DIR = file_util.find_repository_root()
+        PROJECT_BASE_DIR = (REPO_DIR / 'projects' / 'report')
+        RESULTS_DIR = (PROJECT_BASE_DIR / 'results')
         TIMESTAMP = datetime.now().strftime('%Y%m%d_%H%M%S')
         START_TIME = time.perf_counter()
+
+        #setup logger
+        main_logger, warning_logger, detail_logger, console_logger  = logger_setup.setup_loggers(RESULTS_DIR)
 
         #settings from config
         files = config['files']
@@ -43,14 +45,15 @@ def main():
         scenario_file = files['input_file']
         copy_dir = directories['copy_source']
         
-        output_dir = Path(f'run_{TIMESTAMP}') / Path(directories['output_folder'])
+        output_dir = RESULTS_DIR / Path(f'run_{TIMESTAMP}') / Path(directories['output_folder'])
         output_dir.mkdir(parents=True, exist_ok=True)
         output_file = output_dir / Path('scenario_output.csv')
         
-        input_dir = Path(f'run_{TIMESTAMP}') / Path(directories['input_folder'])
+        input_dir = RESULTS_DIR / Path(f'run_{TIMESTAMP}') / Path(directories['input_folder'])
         input_dir.mkdir(parents=True, exist_ok=True)
         scenario_file = input_dir / scenario_file
         rea_file = input_dir / rea_file
+
 
         #copy current REA version file 
         file_util.copy_input_files(copy_dir, input_dir)

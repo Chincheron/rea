@@ -2,12 +2,12 @@ from pathlib import Path
 import logging
 from datetime import datetime
 
-def setup_loggers():
+def setup_loggers(directory):
     '''Setup loggers for different logging info'''
 
     # Create timestamped folder for this run
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    log_dir = Path(f'run_{timestamp}') / 'logs'
+    log_dir = directory / Path(f'run_{timestamp}') / 'logs'
     log_dir.mkdir(parents=True, exist_ok=True)
 
     #main logger for general info

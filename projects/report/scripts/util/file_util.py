@@ -48,3 +48,15 @@ def copy_input_files(source_folder: str | Path, destination_folder: str | Path) 
                 logging.info(f'Copied "{filename.name}"')
             except Exception as e:
                 logging.error(f'Failed to copy {filename.name}: {e}')
+
+def find_repository_root(marker = 'pyproject.toml'):
+    folder = Path(__file__).resolve().parent
+    while folder != folder.parent:  # stop at filesystem root
+        if (folder / marker).exists():
+            return folder
+        folder = folder.parent
+    raise FileNotFoundError(f"Could not find repo root containing {marker}")
+
+def make_directory(path):
+    '''Create specified directory if not exist'''
+    path.mkdir(parents=True, exist_ok=True)
