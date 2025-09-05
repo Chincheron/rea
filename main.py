@@ -8,6 +8,8 @@ import csv
 import json
 import time
 import excel_util as xl
+import csv_util
+
 #TODO 1) modify file copy so that it only copies the specifi input and rea files (pass those file names to function probably)
 #TODO 2) Add flag/option in config file to copy files or directly read from inputs folder   
 
@@ -126,7 +128,10 @@ def main():
         writer.writerow(['Scenario', 'Number Killed', 'Discount Factor', 'Base Year', 'Maximum Age',
                           'Direct Loss', 'Indirect Loss', 'Total Loss', 'Total Gains', 'Annual Reintroduction Rounded', 'Annual Reintroduction Exact'])
         main_logger.info(f'Ouput file created')
-           
+
+        csv_util.create_output_csv(output_dir / 'scenario_output1.csv', ['Scenario', 'Number Killed', 'Discount Factor', 'Base Year', 'Maximum Age',
+                          'Direct Loss', 'Indirect Loss', 'Total Loss', 'Total Gains', 'Annual Reintroduction Rounded', 'Annual Reintroduction Exact'])
+
         for scenario_number, row in enumerate(scenarios.itertuples(index=False), start =1): 
             #read specified input values from the scenarios input dataframe for each scenario
             inputs = {
@@ -167,21 +172,26 @@ def main():
             loss_total = round(io_sheet[output_cells_config['total_loss']].value, 0)
             gains_total = round(io_sheet[output_cells_config['total_gains']].value, 0)
             main_logger.info(f'Scenario {scenario_number}: Excel outputs copied to variable')
+
+            outputs = xl.read_excel_outputs(io_sheet, output_cells_config, 0, main_logger)
+            csv_data = {'Scenario_number': scenario_number, **inputs, **outputs, 'Annual Reintroduction Rounded': annual_reintroduction_rounded, 'Annual Reintroduction Exact': annual_reintroduction_exact}
+            print(csv_data)
+            csv_util.append_output_to_csv(output_dir / 'scenario_output1.csv', list(csv_data.values()))
             
-            #append results
-            writer.writerow([
-                scenario_number,
-                row.number_killed,
-                row.discount_factor,
-                row.discount_start_year,
-                row.maximum_age,
-                direct_loss_total,
-                indirect_loss_total_exclude,
-                loss_total,
-                gains_total,
-                annual_reintroduction_rounded,
-                annual_reintroduction_exact
-            ])
+            # #append results
+            # writer.writerow([
+            #     scenario_number,
+            #     row.number_killed,
+            #     row.discount_factor,
+            #     row.discount_start_year,
+            #     row.maximum_age,
+            #     direct_loss_total,
+            #     indirect_loss_total_exclude,
+            #     loss_total,
+            #     gains_total,
+            #     annual_reintroduction_rounded,
+            #     annual_reintroduction_exact
+            # ])
             main_logger.info(f'Scenario {scenario_number}: Excel outputs written to output file')
             detail_logger.info(f'Scenario {scenario_number}: Excel outputs written to output file:\n' 
                         f'  Direct loss: {direct_loss_total}\n'
