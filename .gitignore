@@ -1,5 +1,6 @@
 *.xlsx
 *.csv
+*.docx
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
