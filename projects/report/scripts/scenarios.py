@@ -17,10 +17,7 @@ import util.analysis_util as analysis_util
 
 if __name__ == "__main__":
     CONFIG_FILE = 'scenarios_config.json'
-    REPO_DIR = file_util.find_repository_root()
-    PROJECT_BASE_DIR = (REPO_DIR / 'projects' / 'report')
-    CONFIG_DIR = PROJECT_BASE_DIR / 'config'
-    CONFIG_PATH = CONFIG_DIR / CONFIG_FILE
-    RESULTS_DIR = (PROJECT_BASE_DIR / 'results')
-    analysis_util.run_rea_scenario_total(CONFIG_PATH)
+    analysis_util.run_rea_scenario_total(CONFIG_FILE)
+
+    # how to deal with config file (i.e., where to specify, here or in analysis_util)
 

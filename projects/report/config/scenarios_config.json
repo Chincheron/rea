@@ -36,8 +36,8 @@
       "indirect_loss": "X4:X182"
     },
       "input_values_default": {
-      "number_killed": 50000,
-      "start_year_analysis": 2016,
+      "number_killed": 6000000,
+      "start_year_analysis": 2030,
       "start_year_reproduction": 2016,
       "base_year": 2016,
       "max_age": 10,

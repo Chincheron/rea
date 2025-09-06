@@ -9,20 +9,19 @@ import util.excel_util as xl
 import util.csv_util as csv_util
 import models.rea.inputs as rea_input_class
 import util.config as config_utl
+from util.constants import * 
 
 def run_rea_scenario_total(config_file: Path | str):
     '''Runs REA based on scenario input file and returns total outputs (i.e. single cell outputs) '''
+    
+    wb_rea = None
+    app = None
     try:
         # initial constants
         CONFIG_FILE = config_file
-        REPO_DIR = file_util.find_repository_root()
-        PROJECT_BASE_DIR = (REPO_DIR / 'projects' / 'report')
-        CONFIG_DIR = PROJECT_BASE_DIR / 'config'
         CONFIG_PATH = CONFIG_DIR / CONFIG_FILE
-        RESULTS_DIR = (PROJECT_BASE_DIR / 'results')
         TIMESTAMP = datetime.now().strftime('%Y%m%d_%H%M%S')
         START_TIME = time.perf_counter()
-
         config = config_utl.load_config(CONFIG_PATH)
         #setup logger
         main_logger, warning_logger, detail_logger, console_logger  = logger_setup.setup_loggers(RESULTS_DIR)
