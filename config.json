@@ -44,7 +44,7 @@
       "discount_factor": 1.03,
       "no_reintroduction_years": 10,
       "start_year_reintroduction": 2019,
-      "annual_reintroduction": 10000
+      "annual_reintroduction": 20000
     }
 
   },

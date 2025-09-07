@@ -10,7 +10,7 @@ def load_config(config_path='config.json'):
 
 config = load_config()
 default_values = config['excel']['input_values_default']
-print(default_values)
+print(config)
 
 @dataclass
 class REAScenarioInputs:
@@ -29,6 +29,23 @@ class REAScenarioInputs:
     annual_reintroduction: int = field(default=default_values['annual_reintroduction'])
 
     @classmethod
+    def create_from_config(cls, config_path, **kwargs):
+        '''Create class object from configfile'''
+        config_path = 'config.json'
+        config = load_config(config_path)
+        default_values = config['excel']['input_values_default'] #extract dict of default values from config file
+        
+        field_values = {}
+        for field_name in cls.__dataclass_fields__:
+            if field_name in kwargs: 
+                field_values[field_name] = kwargs[field_name]
+            else:
+                field_values[field_name] = default_values[field_name]
+                print(False)
+        return cls(**field_values)
+
+
+    @classmethod
     def create_from_row(cls, row):
         """
         Create a REAScenarioInputs object:
@@ -45,9 +62,9 @@ class REAScenarioInputs:
         return asdict(self)
 
 
-test = REAScenarioInputs()
-test = test.to_dict()
-print(test)
-print(type(test))
+# test = REAScenarioInputs()
+# test = test.to_dict()
+# print(test)
+# print(type(test))
 
 
