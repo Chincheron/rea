@@ -54,7 +54,7 @@ def run_rea_scenario_total(config_file: Path | str):
 
 
         #copy current REA version file 
-        file_util.copy_input_files(copy_dir, input_dir)
+        file_util.copy_input_from_config(copy_dir, input_dir, files)
         main_logger.info(f'Input files copied from current working version folder')
 
         #load scenario input file
