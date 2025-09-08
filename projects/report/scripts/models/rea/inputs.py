@@ -36,7 +36,6 @@ class REAScenarioInputs:
                 field_values[field_name] = kwargs[field_name]
             else:
                 field_values[field_name] = default_values.get(field_name)
-                print(False)
         return cls(**field_values)
 
 

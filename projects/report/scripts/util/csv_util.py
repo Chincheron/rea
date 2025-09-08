@@ -21,7 +21,6 @@ def create_output_csv(path: Path | str, headers: list | dict, logger: logging.Lo
 
 def append_output_to_csv(path, row_data):
     '''Append data to csv. Make sure data matches'''
-    print(row_data)
     with open(path, 'a', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(list(row_data))
