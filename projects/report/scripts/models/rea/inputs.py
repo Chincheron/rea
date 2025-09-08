@@ -17,8 +17,8 @@ class REAScenarioInputs:
     number_killed: int 
     start_year_analysis: int 
     start_year_reproduction: int 
-    base_year: int 
-    max_age: int 
+    discount_start_year: int 
+    maximum_age: int 
     discount_factor: float 
     no_reintroduction_years: int 
     start_year_reintroduction: int 
