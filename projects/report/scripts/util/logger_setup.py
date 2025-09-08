@@ -7,7 +7,7 @@ def setup_loggers(directory):
 
     # Create timestamped folder for this run
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    log_dir = directory / Path(f'run_{timestamp}') / 'logs'
+    log_dir = directory / 'logs'
     log_dir.mkdir(parents=True, exist_ok=True)
 
     #main logger for general info

@@ -23,8 +23,12 @@ def run_rea_scenario_total(config_file: Path | str):
         TIMESTAMP = datetime.now().strftime('%Y%m%d_%H%M%S')
         START_TIME = time.perf_counter()
         config = config_utl.load_config(CONFIG_PATH)
+
+        #get script name of root script to use to create directory to hold results for each run of script (e.g., scenarios.py returns 'Scenarios')
+        SCRIPT_NAME = file_util.get_script_name()
+        script_run_results_directory = Path(RESULTS_DIR) / Path(f'{SCRIPT_NAME}_{TIMESTAMP}')
         #setup logger
-        main_logger, warning_logger, detail_logger, console_logger  = logger_setup.setup_loggers(RESULTS_DIR)
+        main_logger, warning_logger, detail_logger, console_logger  = logger_setup.setup_loggers(script_run_results_directory)
 
         #settings from config
         files = config['files']
@@ -39,15 +43,11 @@ def run_rea_scenario_total(config_file: Path | str):
         scenario_file = files['input_file']
         copy_dir = directories['copy_source']
         
-        #get script name of root script to use to create directory to hold results for each run of script (e.g., scenarios.py returns 'Scenarios')
-        SCRIPT_NAME = file_util.get_script_name()
-        main_results_directory = f'{SCRIPT_NAME}_{TIMESTAMP}'
-
-        output_dir = RESULTS_DIR / Path(main_results_directory) / Path(directories['output_folder'])
+        output_dir = RESULTS_DIR / Path(script_run_results_directory) / Path(directories['output_folder'])
         output_dir.mkdir(parents=True, exist_ok=True)
         output_file = output_dir / Path('scenario_output.csv')
         
-        input_dir = RESULTS_DIR / Path(main_results_directory) / Path(directories['input_folder'])
+        input_dir = RESULTS_DIR / Path(script_run_results_directory) / Path(directories['input_folder'])
         input_dir.mkdir(parents=True, exist_ok=True)
         scenario_file = input_dir / scenario_file
         rea_file = input_dir / rea_file
