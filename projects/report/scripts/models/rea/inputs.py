@@ -52,6 +52,17 @@ class REAScenarioInputs:
             if hasattr(row, field_name) and pd.notna(getattr(row, field_name)):
                 setattr(obj, field_name, getattr(row, field_name))
         return obj
+    
+    @classmethod
+    def update_from_row(self, row):
+        """
+        Update an existing REAScenarioInputs object:
+        - override any attributes that exist in the row
+        """
+        for field_name in self.__dataclass_fields__:
+            if hasattr(row, field_name) and pd.notna(getattr(row, field_name)):
+                setattr(self, field_name, getattr(row, field_name))
+        return self
 
     def to_dict(self):
         return asdict(self)
