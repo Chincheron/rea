@@ -4,6 +4,7 @@ import shutil
 import subprocess
 import logging
 from pathlib import Path
+import sys
 
 logging.basicConfig(level=logging.INFO)
 
@@ -60,3 +61,12 @@ def find_repository_root(marker = 'pyproject.toml'):
 def make_directory(path):
     '''Create specified directory if not exist'''
     path.mkdir(parents=True, exist_ok=True)
+
+def get_script_name():
+    import __main__ as main
+    '''Return the name of current script'''
+    # script_path = sys.argv[0]
+    script_path = main.__file__
+    script_name = Path(script_path).stem
+    return(script_name)
+
