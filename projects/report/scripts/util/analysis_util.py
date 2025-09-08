@@ -39,11 +39,15 @@ def run_rea_scenario_total(config_file: Path | str):
         scenario_file = files['input_file']
         copy_dir = directories['copy_source']
         
-        output_dir = RESULTS_DIR / Path(f'run_{TIMESTAMP}') / Path(directories['output_folder'])
+        #get script name of root script to use to create directory to hold results for each run of script (e.g., scenarios.py returns 'Scenarios')
+        SCRIPT_NAME = file_util.get_script_name()
+        main_results_directory = f'{SCRIPT_NAME}_{TIMESTAMP}'
+
+        output_dir = RESULTS_DIR / Path(main_results_directory) / Path(directories['output_folder'])
         output_dir.mkdir(parents=True, exist_ok=True)
         output_file = output_dir / Path('scenario_output.csv')
         
-        input_dir = RESULTS_DIR / Path(f'run_{TIMESTAMP}') / Path(directories['input_folder'])
+        input_dir = RESULTS_DIR / Path(main_results_directory) / Path(directories['input_folder'])
         input_dir.mkdir(parents=True, exist_ok=True)
         scenario_file = input_dir / scenario_file
         rea_file = input_dir / rea_file
