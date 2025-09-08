@@ -53,7 +53,7 @@ class REAScenarioInputs:
                 setattr(obj, field_name, getattr(row, field_name))
         return obj
     
-    @classmethod
+    
     def update_from_row(self, row):
         """
         Update an existing REAScenarioInputs object:

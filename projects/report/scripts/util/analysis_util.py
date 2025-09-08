@@ -71,9 +71,10 @@ def run_rea_scenario_total(config_file: Path | str):
         for scenario_number, row in enumerate(scenarios.itertuples(index=False), start =1): 
             #Step #1: Set inputs
             # Create scenario inputs class with defaults values
-            # and override specified input values from the scenarios input dataframe for each scenario
-            scenario_inputs = rea_input_class.REAScenarioInputs.create_from_row(row)
-            #must conver to dict for easier reading into later functions
+            scenario_inputs = rea_input_class.REAScenarioInputs.create_from_config(CONFIG_PATH, debug=True)
+            # and override with input values from the scenarios input dataframe for each scenario
+            scenario_inputs.update_from_row(row)
+            #must convert to dict for easier reading into later functions
             scenario_inputs_dict = scenario_inputs.to_dict()
             main_logger.info(f'Scenario {scenario_number}: Inputs loaded')
 
