@@ -23,7 +23,7 @@ def mount_drive(drive_letter: str, mount_point: str) -> None:
         raise
 
 
-def copy_input_files(source_folder: str | Path, destination_folder: str | Path) -> None:
+def copy_input_folder(source_folder: str | Path, destination_folder: str | Path) -> None:
     '''
     Copies ALL files in source folder to destination folder. 
     
@@ -49,6 +49,33 @@ def copy_input_files(source_folder: str | Path, destination_folder: str | Path) 
                 logging.info(f'Copied "{filename.name}"')
             except Exception as e:
                 logging.error(f'Failed to copy {filename.name}: {e}')
+
+def copy_input_from_config(source_folder, destination_folder, files) -> None:
+    '''
+    Copies files specified in source folder to destination folder. 
+    
+    Files and folders are specified by provided loaded config
+
+    Must mount drive first if copying from Google Drive folder
+    '''
+
+    #ensure inputs are Path objects
+    src = Path(source_folder)
+    dst = Path(destination_folder)
+
+    dst.mkdir(parents=True, exist_ok=True)
+
+    logging.info(f'Copying files from {source_folder} to {destination_folder}')
+
+    for filename in files.values():
+        file_path = src / Path(filename)
+        destination_path = dst / filename
+        logging.info(f'Destination Path: "{destination_path}"')
+        try:
+            shutil.copy(file_path, destination_path)
+            logging.info(f'Copied "{filename}"')
+        except Exception as e:
+            logging.error(f'Failed to copy {filename}: {e}')
 
 def find_repository_root(marker = 'pyproject.toml'):
     folder = Path(__file__).resolve().parent
