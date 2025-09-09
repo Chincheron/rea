@@ -50,13 +50,30 @@ def set_excel_inputs(sheet, input_values, input_cells, scenario_number, logger =
 
         logger.info(f'Scenario {scenario_number}: Excel cells set to scenario inputs')
 
+def round_cells(value, decimals):
+    '''
+    Check whether cell is a number and round to specified decimals if so
+    If cells are a range (1D or 2D) (i.e., a list), recursively calls itself until a single cell is returned
+    Return value of cell if not a number
+    '''
+    #case of single cell with number
+    if isinstance(value, (int, float)):
+        return round(value, decimals)
+    #case of 1D or 2D range of cells
+    elif isinstance(value, list):
+        return [round_cells(cell, decimals) for cell in value] #works through provided range until a single cell is provided
+    else:
+        return value
+
 def read_excel_outputs(sheet, output_cells, decimals, logger = None):
     '''Read desired output cells from excel workbook'''
     
     outputs = {}
 
     for key, cell in output_cells.items():
-        outputs[key] = round(sheet[cell].value, decimals)
+        #read value of each cell
+        value = sheet[cell].value
+        outputs[key] = round_cells(value, decimals)
     return outputs
 
 def check_qc(sheet, qc_cell, output_dir, csv_data, scenario_number, main_logger = None, warning_logger = None):
