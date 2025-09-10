@@ -100,7 +100,7 @@ def run_rea_scenario_total(config_file: Path | str):
             #No such thing as partial mussel so round annual mussel reintroduction down to nearest whole number and set cell to value
             annual_reintroduction_exact = round(io_sheet[input_cells_config['annual_reintroduction']].value, 2)
             detail_logger.info(f'Scenario {scenario_number}: Exact annual reintroduction: {annual_reintroduction_exact}')
-            annual_reintroduction_rounded = int(annual_reintroduction_exact)
+            annual_reintroduction_rounded = round(annual_reintroduction_exact, 0)
             detail_logger.info(f'Scenario {scenario_number}: Rounded Annual reintroduction: {annual_reintroduction_rounded}')
             io_sheet[input_cells_config['annual_reintroduction']].value =annual_reintroduction_exact
 
@@ -239,7 +239,7 @@ def run_rea_scenario_yearly(config_file: Path | str):
             #No such thing as partial mussel so round annual mussel reintroduction down to nearest whole number and set cell to value
             annual_reintroduction_exact = round(io_sheet[input_cells_config['annual_reintroduction']].value, 2)
             detail_logger.info(f'Scenario {scenario_number}: Exact annual reintroduction: {annual_reintroduction_exact}')
-            annual_reintroduction_rounded = int(annual_reintroduction_exact)
+            annual_reintroduction_rounded = round(annual_reintroduction_exact, 0)
             detail_logger.info(f'Scenario {scenario_number}: Rounded Annual reintroduction: {annual_reintroduction_rounded}')
             io_sheet[input_cells_config['annual_reintroduction']].value =annual_reintroduction_exact
 
