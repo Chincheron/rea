@@ -34,10 +34,13 @@ def run_rea_scenario_total(config_file: Path | str):
         files = config['files']
         directories = config['directories']
         excel_config = config['excel']
+        misc_config = config['misc']
         goal_seek_config = config['goal_seek']
         input_cells_config = excel_config['input_cells']
         output_cells_config = excel_config['output_cells_excluded']
         sheets_config = excel_config['sheet_name']
+
+        decimal_precision_results = misc_config['result_decimal_precision']
 
         rea_file = files['rea_file']
         scenario_file = files['input_file']
@@ -98,7 +101,7 @@ def run_rea_scenario_total(config_file: Path | str):
             main_logger.info(f'Scenario {scenario_number}: Required annual reintroduction calculated (for gain to equal loss)')
 
             #No such thing as partial mussel so round annual mussel reintroduction down to nearest whole number and set cell to value
-            annual_reintroduction_exact = round(io_sheet[input_cells_config['annual_reintroduction']].value, 2)
+            annual_reintroduction_exact = round(io_sheet[input_cells_config['annual_reintroduction']].value, decimal_precision_results)
             detail_logger.info(f'Scenario {scenario_number}: Exact annual reintroduction: {annual_reintroduction_exact}')
             annual_reintroduction_rounded = round(annual_reintroduction_exact, 0)
             detail_logger.info(f'Scenario {scenario_number}: Rounded Annual reintroduction: {annual_reintroduction_rounded}')
@@ -110,7 +113,7 @@ def run_rea_scenario_total(config_file: Path | str):
             main_logger.info(f'Scenario {scenario_number}: Excel workbook recalculated')
 
             #read model outputs and append to csv file
-            outputs = xl.read_excel_outputs(io_sheet, output_cells_config, 0, main_logger)
+            outputs = xl.read_excel_outputs(io_sheet, output_cells_config, decimal_precision_results, main_logger)
             csv_data = {'Scenario_number': scenario_number, **scenario_inputs_dict, **outputs, 'Annual Reintroduction Rounded': annual_reintroduction_rounded, 'Annual Reintroduction Exact': annual_reintroduction_exact}
             if not output_file.exists():
                 csv_util.create_output_csv(output_file, csv_data)
@@ -173,10 +176,13 @@ def run_rea_scenario_yearly(config_file: Path | str):
         files = config['files']
         directories = config['directories']
         excel_config = config['excel']
+        misc_config = config['misc']
         goal_seek_config = config['goal_seek']
         input_cells_config = excel_config['input_cells']
         output_cells_config = excel_config['output_cells_excluded_yearly']
         sheets_config = excel_config['sheet_name']
+
+        decimal_precision_results = misc_config['result_decimal_precision']
 
         rea_file = files['rea_file']
         scenario_file = files['input_file']
@@ -237,7 +243,7 @@ def run_rea_scenario_yearly(config_file: Path | str):
             main_logger.info(f'Scenario {scenario_number}: Required annual reintroduction calculated (for gain to equal loss)')
 
             #No such thing as partial mussel so round annual mussel reintroduction down to nearest whole number and set cell to value
-            annual_reintroduction_exact = round(io_sheet[input_cells_config['annual_reintroduction']].value, 2)
+            annual_reintroduction_exact = round(io_sheet[input_cells_config['annual_reintroduction']].value, decimal_precision_results)
             detail_logger.info(f'Scenario {scenario_number}: Exact annual reintroduction: {annual_reintroduction_exact}')
             annual_reintroduction_rounded = round(annual_reintroduction_exact, 0)
             detail_logger.info(f'Scenario {scenario_number}: Rounded Annual reintroduction: {annual_reintroduction_rounded}')
@@ -249,7 +255,7 @@ def run_rea_scenario_yearly(config_file: Path | str):
             main_logger.info(f'Scenario {scenario_number}: Excel workbook recalculated')
 
             #read model outputs and append to csv file
-            outputs = xl.read_excel_outputs(io_sheet, output_cells_config, 0, main_logger)
+            outputs = xl.read_excel_outputs(io_sheet, output_cells_config, decimal_precision_results, main_logger)
             csv_data = {'Scenario_number': scenario_number, **scenario_inputs_dict, **outputs, 'Annual Reintroduction Rounded': annual_reintroduction_rounded, 'Annual Reintroduction Exact': annual_reintroduction_exact}
             if not output_file.exists():
                 csv_util.create_output_csv(output_file, csv_data)

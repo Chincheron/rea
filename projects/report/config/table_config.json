@@ -8,6 +8,9 @@
     "output_folder": "output",
     "input_folder": "inputs"
   },
+  "misc": {
+    "result_decimal_precision" : 5
+  },
   "excel": {
     "sheet_name": {
       "input_sheet": "Matrix Inputs"
