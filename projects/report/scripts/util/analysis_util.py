@@ -106,6 +106,7 @@ def run_rea_scenario_total(config_file: Path | str):
             detail_logger.info(f'Scenario {scenario_number}: Exact annual reintroduction: {annual_reintroduction_exact}')
             annual_reintroduction_rounded = math_util.round_annual_reintro(annual_reintroduction_exact)
             detail_logger.info(f'Scenario {scenario_number}: Rounded Annual reintroduction: {annual_reintroduction_rounded}')
+            total_gain_exact = math_util.round_outputs(io_sheet[output_cells_config['total_gains']].value, decimal_precision_results) 
             io_sheet[input_cells_config['annual_reintroduction']].value =annual_reintroduction_rounded
 
             #Step #3: Reads desired outputs and writes both inputs and outputs to an output csv for later processing
@@ -115,7 +116,7 @@ def run_rea_scenario_total(config_file: Path | str):
 
             #read model outputs and append to csv file
             outputs = xl.read_excel_outputs(io_sheet, output_cells_config, decimal_precision_results, main_logger)
-            csv_data = {'Scenario_number': scenario_number, **scenario_inputs_dict, **outputs, 'Annual Reintroduction Rounded': annual_reintroduction_rounded, 'Annual Reintroduction Exact': annual_reintroduction_exact}
+            csv_data = {'Scenario_number': scenario_number, **scenario_inputs_dict, **outputs, 'total_gains_exact': total_gain_exact, 'Annual Reintroduction Rounded': annual_reintroduction_rounded, 'Annual Reintroduction Exact': annual_reintroduction_exact}
             if not output_file.exists():
                 csv_util.create_output_csv(output_file, csv_data)
             csv_util.append_output_to_csv(output_file, list(csv_data.values()))
@@ -248,6 +249,7 @@ def run_rea_scenario_yearly(config_file: Path | str):
             detail_logger.info(f'Scenario {scenario_number}: Exact annual reintroduction: {annual_reintroduction_exact}')
             annual_reintroduction_rounded = math_util.round_annual_reintro(annual_reintroduction_exact)
             detail_logger.info(f'Scenario {scenario_number}: Rounded Annual reintroduction: {annual_reintroduction_rounded}')
+            total_gain_exact = math_util.round_outputs(io_sheet[output_cells_config['total_gains']].value, decimal_precision_results) 
             io_sheet[input_cells_config['annual_reintroduction']].value =annual_reintroduction_rounded
 
             #Step #3: Reads desired outputs and writes both inputs and outputs to an output csv for later processing
@@ -257,7 +259,7 @@ def run_rea_scenario_yearly(config_file: Path | str):
 
             #read model outputs and append to csv file
             outputs = xl.read_excel_outputs(io_sheet, output_cells_config, decimal_precision_results, main_logger)
-            csv_data = {'Scenario_number': scenario_number, **scenario_inputs_dict, **outputs, 'Annual Reintroduction Rounded': annual_reintroduction_rounded, 'Annual Reintroduction Exact': annual_reintroduction_exact}
+            csv_data = {'Scenario_number': scenario_number, **scenario_inputs_dict, **outputs, 'total_gains_exact': total_gain_exact, 'Annual Reintroduction Rounded': annual_reintroduction_rounded, 'Annual Reintroduction Exact': annual_reintroduction_exact}
             if not output_file.exists():
                 csv_util.create_output_csv(output_file, csv_data)
             csv_util.append_output_to_csv(output_file, list(csv_data.values()))
