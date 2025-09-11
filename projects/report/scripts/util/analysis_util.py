@@ -10,6 +10,7 @@ import util.csv_util as csv_util
 import models.rea.inputs as rea_input_class
 import util.config as config_utl
 from util.constants import * 
+import util.math_util as math_util
 
 def run_rea_scenario_total(config_file: Path | str):
     '''Runs REA based on scenario input file and returns total outputs (i.e. single cell outputs) '''
@@ -101,9 +102,9 @@ def run_rea_scenario_total(config_file: Path | str):
             main_logger.info(f'Scenario {scenario_number}: Required annual reintroduction calculated (for gain to equal loss)')
 
             #No such thing as partial mussel so round annual mussel reintroduction down to nearest whole number and set cell to value
-            annual_reintroduction_exact = round(io_sheet[input_cells_config['annual_reintroduction']].value, decimal_precision_results)
+            annual_reintroduction_exact = math_util.round_outputs(io_sheet[input_cells_config['annual_reintroduction']].value, decimal_precision_results)
             detail_logger.info(f'Scenario {scenario_number}: Exact annual reintroduction: {annual_reintroduction_exact}')
-            annual_reintroduction_rounded = round(annual_reintroduction_exact, 0)
+            annual_reintroduction_rounded = math_util.round_annual_reintro(annual_reintroduction_exact)
             detail_logger.info(f'Scenario {scenario_number}: Rounded Annual reintroduction: {annual_reintroduction_rounded}')
             io_sheet[input_cells_config['annual_reintroduction']].value =annual_reintroduction_exact
 
@@ -243,9 +244,9 @@ def run_rea_scenario_yearly(config_file: Path | str):
             main_logger.info(f'Scenario {scenario_number}: Required annual reintroduction calculated (for gain to equal loss)')
 
             #No such thing as partial mussel so round annual mussel reintroduction down to nearest whole number and set cell to value
-            annual_reintroduction_exact = round(io_sheet[input_cells_config['annual_reintroduction']].value, decimal_precision_results)
+            annual_reintroduction_exact = math_util.round_outputs(io_sheet[input_cells_config['annual_reintroduction']].value, decimal_precision_results)
             detail_logger.info(f'Scenario {scenario_number}: Exact annual reintroduction: {annual_reintroduction_exact}')
-            annual_reintroduction_rounded = round(annual_reintroduction_exact, 0)
+            annual_reintroduction_rounded = math_util.round_annual_reintro(annual_reintroduction_exact)
             detail_logger.info(f'Scenario {scenario_number}: Rounded Annual reintroduction: {annual_reintroduction_rounded}')
             io_sheet[input_cells_config['annual_reintroduction']].value =annual_reintroduction_exact
 
