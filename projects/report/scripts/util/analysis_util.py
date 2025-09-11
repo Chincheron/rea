@@ -106,7 +106,7 @@ def run_rea_scenario_total(config_file: Path | str):
             detail_logger.info(f'Scenario {scenario_number}: Exact annual reintroduction: {annual_reintroduction_exact}')
             annual_reintroduction_rounded = math_util.round_annual_reintro(annual_reintroduction_exact)
             detail_logger.info(f'Scenario {scenario_number}: Rounded Annual reintroduction: {annual_reintroduction_rounded}')
-            io_sheet[input_cells_config['annual_reintroduction']].value =annual_reintroduction_exact
+            io_sheet[input_cells_config['annual_reintroduction']].value =annual_reintroduction_rounded
 
             #Step #3: Reads desired outputs and writes both inputs and outputs to an output csv for later processing
             #force excel to recalculate
@@ -248,7 +248,7 @@ def run_rea_scenario_yearly(config_file: Path | str):
             detail_logger.info(f'Scenario {scenario_number}: Exact annual reintroduction: {annual_reintroduction_exact}')
             annual_reintroduction_rounded = math_util.round_annual_reintro(annual_reintroduction_exact)
             detail_logger.info(f'Scenario {scenario_number}: Rounded Annual reintroduction: {annual_reintroduction_rounded}')
-            io_sheet[input_cells_config['annual_reintroduction']].value =annual_reintroduction_exact
+            io_sheet[input_cells_config['annual_reintroduction']].value =annual_reintroduction_rounded
 
             #Step #3: Reads desired outputs and writes both inputs and outputs to an output csv for later processing
             #force excel to recalculate
