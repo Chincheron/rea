@@ -7,7 +7,7 @@
     "copy_source": "G:\\My Drive\\Paper Prep\\Leslie Matrix\\Versions\\Current Working Version",
     "output_folder": "output",
     "input_folder": "inputs",
-    "config_folder": "projects/report/config/figures"
+    "config_folder": "config/figures"
   },"misc": {
     "result_decimal_precision" : 5
   },

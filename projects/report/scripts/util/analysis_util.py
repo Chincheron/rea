@@ -10,6 +10,7 @@ import util.csv_util as csv_util
 import models.rea.inputs as rea_input_class
 import util.config as config_utl
 from util.constants import * 
+import util.config as config_util
 
 def run_rea_scenario_total(config_file: Path | str):
     '''Runs REA based on scenario input file and returns total outputs (i.e. single cell outputs) '''
@@ -197,6 +198,9 @@ def run_rea_scenario_yearly(config_file: Path | str):
         input_dir.mkdir(parents=True, exist_ok=True)
         scenario_file = input_dir / scenario_file
         rea_file = input_dir / rea_file
+        
+        config_folder = PROJECT_BASE_DIR / directories['config_folder']
+
 
         #copy current REA version file 
         file_util.copy_input_from_config(copy_dir, input_dir, files)
@@ -212,74 +216,82 @@ def run_rea_scenario_yearly(config_file: Path | str):
         io_sheet = xl.load_worksheet(wb_rea, sheets_config['input_sheet'], warning_logger)
         main_logger.info(f'REA input sheet loaded ({io_sheet})')
 
-        # for loop runs through different scenarios and:
-        # 1) Sets inputs
-        # 2) Solves for number of annual reintroductions required for gains to equal losses
-        # 3) Reads desired outputs and writes both inputs and outputs to an output csv for later processing
-        # 4) QC check of REA QC tests
-        for scenario_number, row in enumerate(scenarios.itertuples(index=False), start =1): 
-            #Step #1: Set inputs
-            # Create scenario inputs class with defaults values
-            scenario_inputs = rea_input_class.REAScenarioInputs.create_from_config(CONFIG_PATH, debug=True)
-            # and override with input values from the scenarios input dataframe for each scenario
-            # scenario_inputs.update_from_row(row)
-            # #must convert to dict for easier reading into later functions
-            # scenario_inputs_dict = scenario_inputs.to_dict()
-            # main_logger.info(f'Scenario {scenario_number}: Inputs loaded')
-
-            # xl.set_excel_inputs(io_sheet, scenario_inputs_dict, input_cells_config, scenario_number, main_logger)
-            # #detail logging of scenario inputs
-            # log_lines = [f'Scenario {scenario_number}: Excel inputs set:']
-            # #read and return all inputs from config file and scenario inputs override
-            # for key in input_cells_config.keys():
-            #     if key in scenario_inputs_dict:
-            #         clean_key = key.replace('_', ' ').title()
-            #         log_lines.append(f'  {clean_key} set to: {scenario_inputs_dict[key]}')
-            # detail_logger.info('\n'.join(log_lines))
+        #for each config file in config folder, run specified scenarios
+        for file in config_folder.iterdir():
+            figure_config = config_util.load_config(file)
+            figure_worksheet = figure_config['worksheet_name']
+            desired_yearly_outputs = figure_config['desired_outputs']['output_cells_excluded_yearly']
+            desired_yearly_outputs = {key:value for key, value in desired_yearly_outputs.items() if value == 'True'}               
             
-            # #Step #2: Solves for number of annual reintroductions required for gains to equal losses
-            # # Goal Seek: set Goal:Loss ratio to 1 by changing Annual Mussel Reintroduction 
-            # xl.run_goal_seek(io_sheet, input_cells_config['loss_ratio'], input_cells_config['annual_reintroduction'], goal_seek_config['target_value'])
-            # main_logger.info(f'Scenario {scenario_number}: Required annual reintroduction calculated (for gain to equal loss)')
+            # for loop runs through different scenarios and:
+            # 1) Sets inputs
+            # 2) Solves for number of annual reintroductions required for gains to equal losses
+            # 3) Reads desired outputs and writes both inputs and outputs to an output csv for later processing
+            # 4) QC check of REA QC tests
+            for scenario_number, row in enumerate(scenarios.itertuples(index=False), start =1): 
+                #Step #1: Set inputs
+                # Create scenario inputs class with defaults values
+                scenario_inputs = rea_input_class.REAScenarioInputs.create_from_config(CONFIG_PATH, debug=True)
+                print(scenario_inputs)
+                # and override with input values from the scenarios input dataframe for each scenario
+                # scenario_inputs.update_from_row(row)
+                # #must convert to dict for easier reading into later functions
+                # scenario_inputs_dict = scenario_inputs.to_dict()
+                # main_logger.info(f'Scenario {scenario_number}: Inputs loaded')
 
-            # #No such thing as partial mussel so round annual mussel reintroduction down to nearest whole number and set cell to value
-            # annual_reintroduction_exact = round(io_sheet[input_cells_config['annual_reintroduction']].value, decimal_precision_results)
-            # detail_logger.info(f'Scenario {scenario_number}: Exact annual reintroduction: {annual_reintroduction_exact}')
-            # annual_reintroduction_rounded = round(annual_reintroduction_exact, 0)
-            # detail_logger.info(f'Scenario {scenario_number}: Rounded Annual reintroduction: {annual_reintroduction_rounded}')
-            # io_sheet[input_cells_config['annual_reintroduction']].value =annual_reintroduction_exact
+                # xl.set_excel_inputs(io_sheet, scenario_inputs_dict, input_cells_config, scenario_number, main_logger)
+                # #detail logging of scenario inputs
+                # log_lines = [f'Scenario {scenario_number}: Excel inputs set:']
+                # #read and return all inputs from config file and scenario inputs override
+                # for key in input_cells_config.keys():
+                #     if key in scenario_inputs_dict:
+                #         clean_key = key.replace('_', ' ').title()
+                #         log_lines.append(f'  {clean_key} set to: {scenario_inputs_dict[key]}')
+                # detail_logger.info('\n'.join(log_lines))
+                
+                # #Step #2: Solves for number of annual reintroductions required for gains to equal losses
+                # # Goal Seek: set Goal:Loss ratio to 1 by changing Annual Mussel Reintroduction 
+                # xl.run_goal_seek(io_sheet, input_cells_config['loss_ratio'], input_cells_config['annual_reintroduction'], goal_seek_config['target_value'])
+                # main_logger.info(f'Scenario {scenario_number}: Required annual reintroduction calculated (for gain to equal loss)')
 
-            # #Step #3: Reads desired outputs and writes both inputs and outputs to an output csv for later processing
-            # #force excel to recalculate
-            # wb_rea.app.calculate()
-            # main_logger.info(f'Scenario {scenario_number}: Excel workbook recalculated')
+                # #No such thing as partial mussel so round annual mussel reintroduction down to nearest whole number and set cell to value
+                # annual_reintroduction_exact = round(io_sheet[input_cells_config['annual_reintroduction']].value, decimal_precision_results)
+                # detail_logger.info(f'Scenario {scenario_number}: Exact annual reintroduction: {annual_reintroduction_exact}')
+                # annual_reintroduction_rounded = round(annual_reintroduction_exact, 0)
+                # detail_logger.info(f'Scenario {scenario_number}: Rounded Annual reintroduction: {annual_reintroduction_rounded}')
+                # io_sheet[input_cells_config['annual_reintroduction']].value =annual_reintroduction_exact
 
-            # #read model outputs and append to csv file
-            # outputs = xl.read_excel_outputs(io_sheet, output_cells_config, decimal_precision_results, main_logger)
-            # csv_data = {'Scenario_number': scenario_number, **scenario_inputs_dict, **outputs, 'Annual Reintroduction Rounded': annual_reintroduction_rounded, 'Annual Reintroduction Exact': annual_reintroduction_exact}
-            # if not output_file.exists():
-            #     csv_util.create_output_csv(output_file, csv_data)
-            # csv_util.append_output_to_csv(output_file, list(csv_data.values()))
+                # #Step #3: Reads desired outputs and writes both inputs and outputs to an output csv for later processing
+                # #force excel to recalculate
+                # wb_rea.app.calculate()
+                # main_logger.info(f'Scenario {scenario_number}: Excel workbook recalculated')
+
+                # #read model outputs and append to csv file
+                # outputs = xl.read_excel_outputs(io_sheet, output_cells_config, decimal_precision_results, main_logger)
+                # csv_data = {'Scenario_number': scenario_number, **scenario_inputs_dict, **outputs, 'Annual Reintroduction Rounded': annual_reintroduction_rounded, 'Annual Reintroduction Exact': annual_reintroduction_exact}
+                # if not output_file.exists():
+                #     csv_util.create_output_csv(output_file, csv_data)
+                # csv_util.append_output_to_csv(output_file, list(csv_data.values()))
+                
+                # #detail logging of scenario outputs
+                # log_lines = [f'Scenario {scenario_number}: Excel outputs written to output file:']
+                # #read and return all outputs from config file
+                # for key in output_cells_config.keys():
+                #     if key in csv_data:
+                #         clean_key = key.replace('_', ' ').title()
+                #         log_lines.append(f'  {clean_key}: {csv_data[key]}')
+                # #inclue outputs created in processing (not in config)
+                # log_lines.append(f'  Annual Reintroduction Rounded: {annual_reintroduction_rounded}')
+                # log_lines.append(f'  Annual Reintroduction Exact: {annual_reintroduction_exact}')
+                # detail_logger.info('\n'.join(log_lines))
+
+                # # Step #4: QC check of REA QC tests
+                # #Excel sheet has multiple qc tests whose results are summarized in a single cell as either 'PASS' or 'FAIL'
+                # #Check this cell and write I/O to file if 'FAIL' for review
+                # xl.check_qc(io_sheet, input_cells_config['qc_test'], output_dir, csv_data, scenario_number, main_logger, warning_logger)
             
-            # #detail logging of scenario outputs
-            # log_lines = [f'Scenario {scenario_number}: Excel outputs written to output file:']
-            # #read and return all outputs from config file
-            # for key in output_cells_config.keys():
-            #     if key in csv_data:
-            #         clean_key = key.replace('_', ' ').title()
-            #         log_lines.append(f'  {clean_key}: {csv_data[key]}')
-            # #inclue outputs created in processing (not in config)
-            # log_lines.append(f'  Annual Reintroduction Rounded: {annual_reintroduction_rounded}')
-            # log_lines.append(f'  Annual Reintroduction Exact: {annual_reintroduction_exact}')
-            # detail_logger.info('\n'.join(log_lines))
-
-            # # Step #4: QC check of REA QC tests
-            # #Excel sheet has multiple qc tests whose results are summarized in a single cell as either 'PASS' or 'FAIL'
-            # #Check this cell and write I/O to file if 'FAIL' for review
-            # xl.check_qc(io_sheet, input_cells_config['qc_test'], output_dir, csv_data, scenario_number, main_logger, warning_logger)
-           
-            # main_logger.info(f'Scenario {scenario_number}: Scenario completed')
-            # console_logger.info(f'{scenario_number}/{len(scenarios)} complete')
+                # main_logger.info(f'Scenario {scenario_number}: Scenario completed')
+                # console_logger.info(f'{scenario_number}/{len(scenarios)} complete')
             
     finally:
         #close excel instance
