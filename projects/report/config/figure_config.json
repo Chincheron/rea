@@ -6,7 +6,10 @@
   "directories": {
     "copy_source": "G:\\My Drive\\Paper Prep\\Leslie Matrix\\Versions\\Current Working Version",
     "output_folder": "output",
-    "input_folder": "inputs"
+    "input_folder": "inputs",
+    "config_folder": "projects/report/config/figures"
+  },"misc": {
+    "result_decimal_precision" : 5
   },
   "excel": {
     "sheet_name": {
@@ -33,7 +36,13 @@
     },
     "output_cells_excluded_yearly": {
       "direct_loss_yearly": "W4:W182",
-      "indirect_loss": "X4:X182"
+      "indirect_loss_yearly": "X4:X182",
+      "total_loss_yearly": "Y4:Y182",
+      "total_gain_yearly": "Z4:Z182",
+      "direct_loss_yearly_cumulative": "AA4:AA182",
+      "indirect_loss_yearly_cumulative": "AB4:AB182",
+      "total_loss_yearly_cumulative": "AC4:AC182",
+      "total_gain_yearly_cumulative": "AD4:AD182"
     },
       "input_values_default": {
       "number_killed": 500000,
