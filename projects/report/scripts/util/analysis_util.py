@@ -206,10 +206,6 @@ def run_rea_scenario_yearly(config_file: Path | str):
         file_util.copy_input_from_config(copy_dir, input_dir, files)
         main_logger.info(f'Input files copied from current working version folder')
 
-        #load scenario input file
-        scenarios = pd.read_csv(scenario_file)
-        main_logger.info(f'Loaded {len(scenarios)} from scenarios input file into dataframe')
-
         #load REA model and I/O sheet
         wb_rea, app = xl.load_workbook(rea_file)
         main_logger.info(f'REA model workbook loaded ({rea_file})')
@@ -222,7 +218,11 @@ def run_rea_scenario_yearly(config_file: Path | str):
             figure_worksheet = figure_config['worksheet_name']
             desired_yearly_outputs = figure_config['desired_outputs']['output_cells_excluded_yearly']
             desired_yearly_outputs = {key:value for key, value in desired_yearly_outputs.items() if value == 'True'}               
-            
+
+            #load scenario input file for figure
+            scenarios = pd.read_excel(scenario_file, figure_worksheet)
+            main_logger.info(f'Loaded {len(scenarios)} from {scenario_file} workbook and {figure_worksheet} worksheet into dataframe')
+
             # for loop runs through different scenarios and:
             # 1) Sets inputs
             # 2) Solves for number of annual reintroductions required for gains to equal losses
@@ -232,9 +232,9 @@ def run_rea_scenario_yearly(config_file: Path | str):
                 #Step #1: Set inputs
                 # Create scenario inputs class with defaults values
                 scenario_inputs = rea_input_class.REAScenarioInputs.create_from_config(CONFIG_PATH, debug=True)
-                print(scenario_inputs)
                 # and override with input values from the scenarios input dataframe for each scenario
-                # scenario_inputs.update_from_row(row)
+                scenario_inputs.update_from_row(row)
+                print(f'scenario inputs updated: {scenario_inputs}')
                 # #must convert to dict for easier reading into later functions
                 # scenario_inputs_dict = scenario_inputs.to_dict()
                 # main_logger.info(f'Scenario {scenario_number}: Inputs loaded')
