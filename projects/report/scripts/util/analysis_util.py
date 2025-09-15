@@ -217,7 +217,14 @@ def run_rea_scenario_yearly(config_file: Path | str):
             figure_config = config_util.load_config(file)
             figure_worksheet = figure_config['worksheet_name']
             desired_yearly_outputs = figure_config['desired_outputs']['output_cells_excluded_yearly']
-            desired_yearly_outputs = {key:value for key, value in desired_yearly_outputs.items() if value == 'True'}               
+            desired_yearly_outputs = {key:value for key, value in desired_yearly_outputs.items() if value == 'True'}    
+            
+            #update output_cells_config based on desired yearly outputs values for this sheet
+            keys_to_delete = [key for key in output_cells_config if key not in desired_yearly_outputs]
+            for key in keys_to_delete:
+                del output_cells_config[key]
+            
+            # #will also nned to reinitiate the output cells config inside of loop?           
 
             #load scenario input file for figure
             scenarios = pd.read_excel(scenario_file, figure_worksheet)
@@ -261,13 +268,14 @@ def run_rea_scenario_yearly(config_file: Path | str):
                 detail_logger.info(f'Scenario {scenario_number}: Rounded Annual reintroduction: {annual_reintroduction_rounded}')
                 io_sheet[input_cells_config['annual_reintroduction']].value =annual_reintroduction_exact
 
-                # #Step #3: Reads desired outputs and writes both inputs and outputs to an output csv for later processing
-                # #force excel to recalculate
-                # wb_rea.app.calculate()
-                # main_logger.info(f'Scenario {scenario_number}: Excel workbook recalculated')
+                #Step #3: Reads desired outputs and writes both inputs and outputs to an output csv for later processing
+                #force excel to recalculate
+                wb_rea.app.calculate()
+                main_logger.info(f'Scenario {scenario_number}: Excel workbook recalculated')
 
-                # #read model outputs and append to csv file
-                # outputs = xl.read_excel_outputs(io_sheet, output_cells_config, decimal_precision_results, main_logger)
+                #read model outputs and append to csv file
+                outputs = xl.read_excel_outputs(io_sheet, output_cells_config, decimal_precision_results, main_logger)
+                # print(outputs)
                 # csv_data = {'Scenario_number': scenario_number, **scenario_inputs_dict, **outputs, 'Annual Reintroduction Rounded': annual_reintroduction_rounded, 'Annual Reintroduction Exact': annual_reintroduction_exact}
                 # if not output_file.exists():
                 #     csv_util.create_output_csv(output_file, csv_data)
