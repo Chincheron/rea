@@ -235,31 +235,31 @@ def run_rea_scenario_yearly(config_file: Path | str):
                 # and override with input values from the scenarios input dataframe for each scenario
                 scenario_inputs.update_from_row(row)
                 print(f'scenario inputs updated: {scenario_inputs}')
-                # #must convert to dict for easier reading into later functions
-                # scenario_inputs_dict = scenario_inputs.to_dict()
-                # main_logger.info(f'Scenario {scenario_number}: Inputs loaded')
+                #must convert to dict for easier reading into later functions
+                scenario_inputs_dict = scenario_inputs.to_dict()
+                main_logger.info(f'Scenario {scenario_number}: Inputs loaded')
 
-                # xl.set_excel_inputs(io_sheet, scenario_inputs_dict, input_cells_config, scenario_number, main_logger)
-                # #detail logging of scenario inputs
-                # log_lines = [f'Scenario {scenario_number}: Excel inputs set:']
-                # #read and return all inputs from config file and scenario inputs override
-                # for key in input_cells_config.keys():
-                #     if key in scenario_inputs_dict:
-                #         clean_key = key.replace('_', ' ').title()
-                #         log_lines.append(f'  {clean_key} set to: {scenario_inputs_dict[key]}')
-                # detail_logger.info('\n'.join(log_lines))
+                xl.set_excel_inputs(io_sheet, scenario_inputs_dict, input_cells_config, scenario_number, main_logger)
+                #detail logging of scenario inputs
+                log_lines = [f'Scenario {scenario_number}: Excel inputs set:']
+                #read and return all inputs from config file and scenario inputs override
+                for key in input_cells_config.keys():
+                    if key in scenario_inputs_dict:
+                        clean_key = key.replace('_', ' ').title()
+                        log_lines.append(f'  {clean_key} set to: {scenario_inputs_dict[key]}')
+                detail_logger.info('\n'.join(log_lines))
                 
-                # #Step #2: Solves for number of annual reintroductions required for gains to equal losses
-                # # Goal Seek: set Goal:Loss ratio to 1 by changing Annual Mussel Reintroduction 
-                # xl.run_goal_seek(io_sheet, input_cells_config['loss_ratio'], input_cells_config['annual_reintroduction'], goal_seek_config['target_value'])
-                # main_logger.info(f'Scenario {scenario_number}: Required annual reintroduction calculated (for gain to equal loss)')
+                #Step #2: Solves for number of annual reintroductions required for gains to equal losses
+                # Goal Seek: set Goal:Loss ratio to 1 by changing Annual Mussel Reintroduction 
+                xl.run_goal_seek(io_sheet, input_cells_config['loss_ratio'], input_cells_config['annual_reintroduction'], goal_seek_config['target_value'])
+                main_logger.info(f'Scenario {scenario_number}: Required annual reintroduction calculated (for gain to equal loss)')
 
-                # #No such thing as partial mussel so round annual mussel reintroduction down to nearest whole number and set cell to value
-                # annual_reintroduction_exact = round(io_sheet[input_cells_config['annual_reintroduction']].value, decimal_precision_results)
-                # detail_logger.info(f'Scenario {scenario_number}: Exact annual reintroduction: {annual_reintroduction_exact}')
-                # annual_reintroduction_rounded = round(annual_reintroduction_exact, 0)
-                # detail_logger.info(f'Scenario {scenario_number}: Rounded Annual reintroduction: {annual_reintroduction_rounded}')
-                # io_sheet[input_cells_config['annual_reintroduction']].value =annual_reintroduction_exact
+                #No such thing as partial mussel so round annual mussel reintroduction down to nearest whole number and set cell to value
+                annual_reintroduction_exact = round(io_sheet[input_cells_config['annual_reintroduction']].value, decimal_precision_results)
+                detail_logger.info(f'Scenario {scenario_number}: Exact annual reintroduction: {annual_reintroduction_exact}')
+                annual_reintroduction_rounded = round(annual_reintroduction_exact, 0)
+                detail_logger.info(f'Scenario {scenario_number}: Rounded Annual reintroduction: {annual_reintroduction_rounded}')
+                io_sheet[input_cells_config['annual_reintroduction']].value =annual_reintroduction_exact
 
                 # #Step #3: Reads desired outputs and writes both inputs and outputs to an output csv for later processing
                 # #force excel to recalculate
