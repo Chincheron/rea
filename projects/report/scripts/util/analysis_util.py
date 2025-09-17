@@ -194,8 +194,9 @@ def run_rea_scenario_yearly(config_file: Path | str):
         output_dir = RESULTS_DIR / Path(script_run_results_directory) / Path(directories['output_folder'])
         output_dir.mkdir(parents=True, exist_ok=True)
         output_file = output_dir / Path('scenario_output.xlsx')
-        output_input_file = output_dir / Path('scenario_inputs.csv')
-
+        output_input_dir = output_dir / Path('scenario_inputs')
+        output_input_dir.mkdir(parents=True, exist_ok=True)
+        
         input_dir = RESULTS_DIR / Path(script_run_results_directory) / Path(directories['input_folder'])
         input_dir.mkdir(parents=True, exist_ok=True)
         scenario_file = input_dir / scenario_file
@@ -288,7 +289,10 @@ def run_rea_scenario_yearly(config_file: Path | str):
                
                 #append resutls of each scenario to figure_outputs (for exporting) 
                 figure_outputs = data_util.append_to_dictionary(figure_outputs, outputs)
-            
+                
+
+                output_input_file = output_input_dir / Path(f'{figure_worksheet}.csv')
+
                 csv_data = {'Scenario_number': scenario_number, **scenario_inputs_dict}
                 if not output_input_file.exists():
                     csv_util.create_output_csv(output_input_file, csv_data)
