@@ -50,7 +50,7 @@
       "start_year_analysis": 2016,
       "start_year_reproduction": 2016,
       "discount_start_year": 2016,
-      "maximum_age": 60,
+      "maximum_age": 50,
       "discount_factor": 1.03,
       "no_reintroduction_years": 10,
       "start_year_reintroduction": 2019,

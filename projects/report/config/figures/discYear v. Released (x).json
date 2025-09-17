@@ -1,0 +1,23 @@
+{
+    "worksheet_name": "discYear v. Released (x)",
+    "desired_outputs": {
+      "output_cells_excluded_yearly": {
+        "years": "True",
+        "direct_loss_yearly": "False",
+        "indirect_loss_yearly": "False",
+        "total_loss_yearly": "False",
+        "total_gain_yearly": "False",
+        "direct_loss_yearly_cumulative": "True",
+        "indirect_loss_yearly_cumulative": "True",
+        "total_loss_yearly_cumulative": "True",
+        "total_gain_yearly_cumulative": "True"
+      },
+      "output_cells_excluded": {
+      "direct_loss": "False",
+      "indirect_loss": "False",
+      "total_loss": "False",
+      "total_gains": "False"
+    }
+    }
+
+}
