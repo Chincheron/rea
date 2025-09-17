@@ -3,6 +3,7 @@ import xlwings as xw
 from pathlib import Path
 import logging
 import util.csv_util as csv_util
+import pandas as pd
 
 def load_workbook(workbook: Path |str, visible: bool = False) -> tuple[xw.Book, xw.App]:
     '''Loads Excel file using xlwing in background (headless) mode'''
@@ -65,15 +66,18 @@ def round_cells(value, decimals):
     else:
         return value
 
-def read_excel_outputs(sheet, output_cells, decimals, logger = None):
-    '''Read desired output cells from excel workbook'''
+def read_excel_outputs(sheet, output_cells, decimals, scenarios = None, scenario_number = None,  logger = None):
+    '''Read desired output cells from excel workbook
+    Can optionally pass the current scenario row to append scenario name to headers (for yearly outputs primarily)
+    '''
     
+    scenario_name = scenarios.loc[(scenario_number-1),'scenario_name']
     outputs = {}
 
     for key, cell in output_cells.items():
         #read value of each cell
         value = sheet[cell].value
-        outputs[key] = round_cells(value, decimals)
+        outputs[f'{scenario_name}:{key}'] = round_cells(value, decimals)
     return outputs
 
 def check_qc(sheet, qc_cell, output_dir, csv_data, scenario_number, main_logger = None, warning_logger = None):

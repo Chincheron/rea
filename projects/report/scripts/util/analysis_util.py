@@ -241,7 +241,7 @@ def run_rea_scenario_yearly(config_file: Path | str):
                 scenario_inputs = rea_input_class.REAScenarioInputs.create_from_config(CONFIG_PATH, debug=True)
                 # and override with input values from the scenarios input dataframe for each scenario
                 scenario_inputs.update_from_row(row)
-                print(f'scenario inputs updated: {scenario_inputs}')
+                # print(f'scenario inputs updated: {scenario_inputs}')
                 #must convert to dict for easier reading into later functions
                 scenario_inputs_dict = scenario_inputs.to_dict()
                 main_logger.info(f'Scenario {scenario_number}: Inputs loaded')
@@ -274,8 +274,11 @@ def run_rea_scenario_yearly(config_file: Path | str):
                 main_logger.info(f'Scenario {scenario_number}: Excel workbook recalculated')
 
                 #read model outputs and append to csv file
-                outputs = xl.read_excel_outputs(io_sheet, output_cells_config, decimal_precision_results, main_logger)
-                # print(outputs)
+                outputs = xl.read_excel_outputs(io_sheet, output_cells_config, decimal_precision_results, scenarios, scenario_number, main_logger)
+                #alter code to save each output to a single cell?
+                #but this needs be saved to a output variable that persists across secenarios runs (but not across config files runs)
+                #append resutls of each scenario with scenrio name and excel outptu will be outside of scenario loop but inside config loop
+
                 # csv_data = {'Scenario_number': scenario_number, **scenario_inputs_dict, **outputs, 'Annual Reintroduction Rounded': annual_reintroduction_rounded, 'Annual Reintroduction Exact': annual_reintroduction_exact}
                 # if not output_file.exists():
                 #     csv_util.create_output_csv(output_file, csv_data)
