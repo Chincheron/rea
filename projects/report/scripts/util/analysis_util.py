@@ -11,6 +11,7 @@ import models.rea.inputs as rea_input_class
 import util.config as config_utl
 from util.constants import * 
 import util.config as config_util
+import util.data_util as data_util
 
 def run_rea_scenario_total(config_file: Path | str):
     '''Runs REA based on scenario input file and returns total outputs (i.e. single cell outputs) '''
@@ -212,6 +213,7 @@ def run_rea_scenario_yearly(config_file: Path | str):
         io_sheet = xl.load_worksheet(wb_rea, sheets_config['input_sheet'], warning_logger)
         main_logger.info(f'REA input sheet loaded ({io_sheet})')
 
+        
         #for each config file in config folder, run specified scenarios
         for file in config_folder.iterdir():
             figure_config = config_util.load_config(file)
@@ -224,6 +226,8 @@ def run_rea_scenario_yearly(config_file: Path | str):
             for key in keys_to_delete:
                 del output_cells_config[key]
             
+            #create empty outputs for each figure
+            figure_outputs = {}
             # #will also nned to reinitiate the output cells config inside of loop?           
 
             #load scenario input file for figure
@@ -275,34 +279,38 @@ def run_rea_scenario_yearly(config_file: Path | str):
 
                 #read model outputs and append to csv file
                 outputs = xl.read_excel_outputs(io_sheet, output_cells_config, decimal_precision_results, scenarios, scenario_number, main_logger)
-                #alter code to save each output to a single cell?
-                #but this needs be saved to a output variable that persists across secenarios runs (but not across config files runs)
-                #append resutls of each scenario with scenrio name and excel outptu will be outside of scenario loop but inside config loop
+                #append resutls of each scenario to figure_outputs (for exporting) 
+                figure_outputs = data_util.append_to_dictionary(figure_outputs, outputs)
+            print(figure_outputs.keys())
 
-                # csv_data = {'Scenario_number': scenario_number, **scenario_inputs_dict, **outputs, 'Annual Reintroduction Rounded': annual_reintroduction_rounded, 'Annual Reintroduction Exact': annual_reintroduction_exact}
-                # if not output_file.exists():
-                #     csv_util.create_output_csv(output_file, csv_data)
-                # csv_util.append_output_to_csv(output_file, list(csv_data.values()))
-                
-                # #detail logging of scenario outputs
-                # log_lines = [f'Scenario {scenario_number}: Excel outputs written to output file:']
-                # #read and return all outputs from config file
-                # for key in output_cells_config.keys():
-                #     if key in csv_data:
-                #         clean_key = key.replace('_', ' ').title()
-                #         log_lines.append(f'  {clean_key}: {csv_data[key]}')
-                # #inclue outputs created in processing (not in config)
-                # log_lines.append(f'  Annual Reintroduction Rounded: {annual_reintroduction_rounded}')
-                # log_lines.append(f'  Annual Reintroduction Exact: {annual_reintroduction_exact}')
-                # detail_logger.info('\n'.join(log_lines))
+            #export final figure results to excel file
+            xl.create_output_excel_file(output_file, figure_outputs, figure_worksheet)
+            xl.append_output_excel_file(output_file, figure_outputs, figure_worksheet)
 
-                # # Step #4: QC check of REA QC tests
-                # #Excel sheet has multiple qc tests whose results are summarized in a single cell as either 'PASS' or 'FAIL'
-                # #Check this cell and write I/O to file if 'FAIL' for review
-                # xl.check_qc(io_sheet, input_cells_config['qc_test'], output_dir, csv_data, scenario_number, main_logger, warning_logger)
+            # csv_data = {'Scenario_number': scenario_number, **scenario_inputs_dict, **figure_outputs, 'Annual Reintroduction Rounded': annual_reintroduction_rounded, 'Annual Reintroduction Exact': annual_reintroduction_exact}
+            # if not output_file.exists():
+            #     csv_util.create_output_csv(output_file, csv_data)
+            # csv_util.append_output_to_csv(output_file, list(csv_data.values()))
             
-                # main_logger.info(f'Scenario {scenario_number}: Scenario completed')
-                # console_logger.info(f'{scenario_number}/{len(scenarios)} complete')
+            # #detail logging of scenario outputs
+            # log_lines = [f'Scenario {scenario_number}: Excel outputs written to output file:']
+            # #read and return all outputs from config file
+            # for key in output_cells_config.keys():
+            #     if key in csv_data:
+            #         clean_key = key.replace('_', ' ').title()
+            #         log_lines.append(f'  {clean_key}: {csv_data[key]}')
+            # #inclue outputs created in processing (not in config)
+            # log_lines.append(f'  Annual Reintroduction Rounded: {annual_reintroduction_rounded}')
+            # log_lines.append(f'  Annual Reintroduction Exact: {annual_reintroduction_exact}')
+            # detail_logger.info('\n'.join(log_lines))
+
+            # # Step #4: QC check of REA QC tests
+            # #Excel sheet has multiple qc tests whose results are summarized in a single cell as either 'PASS' or 'FAIL'
+            # #Check this cell and write I/O to file if 'FAIL' for review
+            # xl.check_qc(io_sheet, input_cells_config['qc_test'], output_dir, csv_data, scenario_number, main_logger, warning_logger)
+        
+            # main_logger.info(f'Scenario {scenario_number}: Scenario completed')
+            # console_logger.info(f'{scenario_number}/{len(scenarios)} complete')
             
     finally:
         #close excel instance
