@@ -279,13 +279,19 @@ def run_rea_scenario_yearly(config_file: Path | str):
 
                 #read model outputs and append to csv file
                 outputs = xl.read_excel_outputs(io_sheet, output_cells_config, decimal_precision_results, scenarios, scenario_number, main_logger)
+                
+                #append annual reintroduction results
+                scenario_name = scenarios.loc[(scenario_number-1),'scenario_name']
+                outputs[f'{scenario_name}: Annual Reintroduction Rounded'] = annual_reintroduction_rounded
+                outputs[f'{scenario_name}: Annual Reintroduction Exact'] = annual_reintroduction_exact
+               
                 #append resutls of each scenario to figure_outputs (for exporting) 
                 figure_outputs = data_util.append_to_dictionary(figure_outputs, outputs)
-            print(figure_outputs.keys())
-
+            
             #export final figure results to excel file
-            xl.create_output_excel_file(output_file, figure_outputs, figure_worksheet)
-            xl.append_output_excel_file(output_file, figure_outputs, figure_worksheet)
+            output_data = {**figure_outputs}
+            xl.create_output_excel_file(output_file, output_data, figure_worksheet)
+            xl.append_output_excel_file(output_file, output_data, figure_worksheet)
 
             # csv_data = {'Scenario_number': scenario_number, **scenario_inputs_dict, **figure_outputs, 'Annual Reintroduction Rounded': annual_reintroduction_rounded, 'Annual Reintroduction Exact': annual_reintroduction_exact}
             # if not output_file.exists():
