@@ -194,7 +194,8 @@ def run_rea_scenario_yearly(config_file: Path | str):
         output_dir = RESULTS_DIR / Path(script_run_results_directory) / Path(directories['output_folder'])
         output_dir.mkdir(parents=True, exist_ok=True)
         output_file = output_dir / Path('scenario_output.xlsx')
-        
+        output_input_file = output_dir / Path('scenario_inputs.csv')
+
         input_dir = RESULTS_DIR / Path(script_run_results_directory) / Path(directories['input_folder'])
         input_dir.mkdir(parents=True, exist_ok=True)
         scenario_file = input_dir / scenario_file
@@ -288,15 +289,19 @@ def run_rea_scenario_yearly(config_file: Path | str):
                 #append resutls of each scenario to figure_outputs (for exporting) 
                 figure_outputs = data_util.append_to_dictionary(figure_outputs, outputs)
             
+                csv_data = {'Scenario_number': scenario_number, **scenario_inputs_dict}
+                if not output_input_file.exists():
+                    csv_util.create_output_csv(output_input_file, csv_data)
+                csv_util.append_output_to_csv(output_input_file, list(csv_data.values()))
+
+            
             #export final figure results to excel file
             output_data = {**figure_outputs}
             xl.create_output_excel_file(output_file, output_data, figure_worksheet)
             xl.append_output_excel_file(output_file, output_data, figure_worksheet)
+            
+            
 
-            # csv_data = {'Scenario_number': scenario_number, **scenario_inputs_dict, **figure_outputs, 'Annual Reintroduction Rounded': annual_reintroduction_rounded, 'Annual Reintroduction Exact': annual_reintroduction_exact}
-            # if not output_file.exists():
-            #     csv_util.create_output_csv(output_file, csv_data)
-            # csv_util.append_output_to_csv(output_file, list(csv_data.values()))
             
             # #detail logging of scenario outputs
             # log_lines = [f'Scenario {scenario_number}: Excel outputs written to output file:']
