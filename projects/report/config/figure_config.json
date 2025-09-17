@@ -35,6 +35,7 @@
       "total_gains": "T7"
     },
     "output_cells_excluded_yearly": {
+      "years": "V4:V182",
       "direct_loss_yearly": "W4:W182",
       "indirect_loss_yearly": "X4:X182",
       "total_loss_yearly": "Y4:Y182",
