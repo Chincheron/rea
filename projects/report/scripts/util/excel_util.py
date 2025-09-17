@@ -73,6 +73,7 @@ def read_excel_outputs(sheet, output_cells, decimals, scenarios = None, scenario
     
     scenario_name = scenarios.loc[(scenario_number-1),'scenario_name']
     outputs = {}
+    outputs[scenario_name] = '' 
 
     for key, cell in output_cells.items():
         #read value of each cell
