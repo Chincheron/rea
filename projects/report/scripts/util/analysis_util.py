@@ -233,8 +233,13 @@ def run_rea_scenario_yearly(config_file: Path | str):
             # #will also nned to reinitiate the output cells config inside of loop?           
 
             #load scenario input file for figure
-            scenarios = pd.read_excel(scenario_file, figure_worksheet)
-            main_logger.info(f'Loaded {len(scenarios)} from {scenario_file} workbook and {figure_worksheet} worksheet into dataframe')
+            try:
+                scenarios = pd.read_excel(scenario_file, figure_worksheet)
+                main_logger.info(f'Loaded {len(scenarios)} from {scenario_file} workbook and {figure_worksheet} worksheet into dataframe')
+            except ValueError as e:
+                warning_logger.warning(f'Worksheet {figure_worksheet} not found')
+                continue
+
 
             # for loop runs through different scenarios and:
             # 1) Sets inputs
