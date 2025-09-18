@@ -222,15 +222,14 @@ def run_rea_scenario_yearly(config_file: Path | str):
             figure_worksheet = figure_config['worksheet_name']
             desired_yearly_outputs = figure_config['desired_outputs']['output_cells_excluded_yearly']
             desired_yearly_outputs = {key:value for key, value in desired_yearly_outputs.items() if value == 'True'}    
-            main_logger.info(f'Desired outputs for {file}: {desired_yearly_outputs}')
+            main_logger.info(f'Desired outputs for "{file.name}": {desired_yearly_outputs}')
 
-            
             #update output_cells_config based on desired yearly outputs values for this sheet
             keys_to_delete = [key for key in output_cells_config if key not in desired_yearly_outputs]
             for key in keys_to_delete:
                 del output_cells_config[key]
-            print(f'output cells: {output_cells_config}')
-            
+            detail_logger.info(f'Outputs to read for "{file.name}":\n'
+                               f'   {output_cells_config}')            
             #create empty outputs for each figure
             figure_outputs = {}
             # #will also nned to reinitiate the output cells config inside of loop?           
@@ -242,14 +241,15 @@ def run_rea_scenario_yearly(config_file: Path | str):
             except ValueError as e:
                 warning_logger.warning(f'Worksheet {figure_worksheet} not found')
                 continue
-
-
+            
             # for loop runs through different scenarios and:
             # 1) Sets inputs
             # 2) Solves for number of annual reintroductions required for gains to equal losses
             # 3) Reads desired outputs and writes both inputs and outputs to an output csv for later processing
             # 4) QC check of REA QC tests
             for scenario_number, row in enumerate(scenarios.itertuples(index=False), start =1): 
+                scenario_name = scenarios.loc[(scenario_number-1),'scenario_name']
+
                 #Step #1: Set inputs
                 # Create scenario inputs class with defaults values
                 scenario_inputs = rea_input_class.REAScenarioInputs.create_from_config(CONFIG_PATH, debug=True)
@@ -258,11 +258,11 @@ def run_rea_scenario_yearly(config_file: Path | str):
                 # print(f'scenario inputs updated: {scenario_inputs}')
                 #must convert to dict for easier reading into later functions
                 scenario_inputs_dict = scenario_inputs.to_dict()
-                main_logger.info(f'Scenario {scenario_number}: Inputs loaded')
+                main_logger.info(f'Scenario {scenario_number} ({scenario_name}): Inputs loaded')
 
                 xl.set_excel_inputs(io_sheet, scenario_inputs_dict, input_cells_config, scenario_number, main_logger)
                 #detail logging of scenario inputs
-                log_lines = [f'Scenario {scenario_number}: Excel inputs set:']
+                log_lines = [f'Scenario {scenario_number} ({scenario_name}): Excel inputs set:']
                 #read and return all inputs from config file and scenario inputs override
                 for key in input_cells_config.keys():
                     if key in scenario_inputs_dict:
@@ -289,9 +289,9 @@ def run_rea_scenario_yearly(config_file: Path | str):
 
                 #read model outputs and append to csv file
                 outputs = xl.read_excel_outputs(io_sheet, output_cells_config, decimal_precision_results, scenarios, scenario_number, main_logger)
-                
+                detail_logger.info(f'Read outputs directly from excel: {outputs.keys()}')
+
                 #append annual reintroduction results
-                scenario_name = scenarios.loc[(scenario_number-1),'scenario_name']
                 outputs[f'{scenario_name}: Annual Reintroduction Rounded'] = annual_reintroduction_rounded
                 outputs[f'{scenario_name}: Annual Reintroduction Exact'] = annual_reintroduction_exact
                
