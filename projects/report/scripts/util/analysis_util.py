@@ -222,11 +222,14 @@ def run_rea_scenario_yearly(config_file: Path | str):
             figure_worksheet = figure_config['worksheet_name']
             desired_yearly_outputs = figure_config['desired_outputs']['output_cells_excluded_yearly']
             desired_yearly_outputs = {key:value for key, value in desired_yearly_outputs.items() if value == 'True'}    
+            main_logger.info(f'Desired outputs for {file}: {desired_yearly_outputs}')
+
             
             #update output_cells_config based on desired yearly outputs values for this sheet
             keys_to_delete = [key for key in output_cells_config if key not in desired_yearly_outputs]
             for key in keys_to_delete:
                 del output_cells_config[key]
+            print(f'output cells: {output_cells_config}')
             
             #create empty outputs for each figure
             figure_outputs = {}

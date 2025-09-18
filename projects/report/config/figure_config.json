@@ -1,6 +1,6 @@
 {
   "files": {
-    "rea_file": "Mussel REA_v2.0.1.xlsx",
+    "rea_file": "Mussel REA_v2.0.2.xlsx",
     "input_file": "Figure_Inputs.xlsx"
   },
   "directories": {
@@ -36,14 +36,15 @@
     },
     "output_cells_excluded_yearly": {
       "years": "V4:V182",
-      "direct_loss_yearly": "W4:W182",
-      "indirect_loss_yearly": "X4:X182",
-      "total_loss_yearly": "Y4:Y182",
-      "total_gain_yearly": "Z4:Z182",
-      "direct_loss_yearly_cumulative": "AA4:AA182",
-      "indirect_loss_yearly_cumulative": "AB4:AB182",
-      "total_loss_yearly_cumulative": "AC4:AC182",
-      "total_gain_yearly_cumulative": "AD4:AD182"
+      "discount_factor": "W4:W182",
+      "direct_loss_yearly": "X4:X182",
+      "indirect_loss_yearly": "Y4:Y182",
+      "total_loss_yearly": "Z4:Z182",
+      "total_gain_yearly": "AA4:AA182",
+      "direct_loss_yearly_cumulative": "AB4:AB182",
+      "indirect_loss_yearly_cumulative": "AC4:AC182",
+      "total_loss_yearly_cumulative": "AD4:AD182",
+      "total_gain_yearly_cumulative": "AE4:AE182"
     },
       "input_values_default": {
       "number_killed": 500000,

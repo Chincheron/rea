@@ -3,6 +3,7 @@
     "desired_outputs": {
       "output_cells_excluded_yearly": {
         "years": "True",
+        "discount_factor": "True",
         "direct_loss_yearly": "False",
         "indirect_loss_yearly": "False",
         "total_loss_yearly": "False",
