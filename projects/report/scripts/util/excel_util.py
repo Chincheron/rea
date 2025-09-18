@@ -148,7 +148,14 @@ def append_output_excel_file(path: Path | str, output_dic: dict, sheet_name = No
         main_logger = logging.getLogger(__name__)
     if warning_logger is None:
         warning_logger = logging.getLogger(__name__)
-     
+
+    path = Path(path)
+
+    if not path.exists():
+        main_logger.info(f'{path} does not exist. Creating...')
+        create_output_excel_file(path, output_dic, sheet_name, main_logger, warning_logger)
+    
+    
     try:
             
         if isinstance(output_dic, dict):
@@ -161,7 +168,7 @@ def append_output_excel_file(path: Path | str, output_dic: dict, sheet_name = No
 
         #create worksheet
         new_sheet = wb.sheets.add(name= sheet_name) 
-        main_logger.info(f'Workbook at {path} created')
+        main_logger.info(f'Worksheet {sheet_name} created')
 
         #write headers ()
         new_sheet.range('A1').value = headers
@@ -186,4 +193,4 @@ def append_output_excel_file(path: Path | str, output_dic: dict, sheet_name = No
         #     logger.info(f'Ouput file created')
     finally:
         if wb: wb.close()
-        
+    
