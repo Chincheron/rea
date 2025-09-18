@@ -226,6 +226,8 @@ def run_rea_scenario_yearly(config_file: Path | str):
                              f'{desired_yearly_outputs}')
 
             #update output_cells_config based on desired yearly outputs values for this sheet
+            #must reinitiate both variables for each figure
+            output_cells_config = excel_config['output_cells_excluded_yearly'].copy()
             keys_to_delete = [key for key in output_cells_config if key not in desired_yearly_outputs]
             detail_logger.info(f'Exhibit "{file.stem}": keys to delete \n'
                                f'{keys_to_delete}')
