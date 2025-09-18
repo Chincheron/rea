@@ -303,11 +303,14 @@ def run_rea_scenario_yearly(config_file: Path | str):
                     csv_util.create_output_csv(output_input_file, csv_data)
                 csv_util.append_output_to_csv(output_input_file, list(csv_data.values()))
 
+                console_logger.info(f'{scenario_name} complete')
             
             #export final figure results to excel file
             output_data = {**figure_outputs}
-            xl.create_output_excel_file(output_file, output_data, figure_worksheet)
-            xl.append_output_excel_file(output_file, output_data, figure_worksheet)
+            xl.create_output_excel_file(output_file, output_data, figure_worksheet, console_logger, warning_logger)
+            xl.append_output_excel_file(output_file, output_data, figure_worksheet, console_logger, warning_logger)
+
+            console_logger.info(f'{figure_worksheet} complete')
             
             
 
