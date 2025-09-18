@@ -222,14 +222,19 @@ def run_rea_scenario_yearly(config_file: Path | str):
             figure_worksheet = figure_config['worksheet_name']
             desired_yearly_outputs = figure_config['desired_outputs']['output_cells_excluded_yearly']
             desired_yearly_outputs = {key:value for key, value in desired_yearly_outputs.items() if value == 'True'}    
-            main_logger.info(f'Desired outputs for "{file.name}": {desired_yearly_outputs}')
+            main_logger.info(f'Exhibit "{file.stem}": Desired outputs: \n'
+                             f'{desired_yearly_outputs}')
 
             #update output_cells_config based on desired yearly outputs values for this sheet
             keys_to_delete = [key for key in output_cells_config if key not in desired_yearly_outputs]
+            detail_logger.info(f'Exhibit "{file.stem}": keys to delete \n'
+                               f'{keys_to_delete}')
             for key in keys_to_delete:
                 del output_cells_config[key]
-            detail_logger.info(f'Outputs to read for "{file.name}":\n'
-                               f'   {output_cells_config}')            
+            detail_logger.info(f'Exhibit "{file.stem}": Outputs to read:\n'
+                               f'   {output_cells_config.keys()}\n'
+                               f'   {output_cells_config.values()}')
+                        
             #create empty outputs for each figure
             figure_outputs = {}
             # #will also nned to reinitiate the output cells config inside of loop?           
@@ -237,9 +242,9 @@ def run_rea_scenario_yearly(config_file: Path | str):
             #load scenario input file for figure
             try:
                 scenarios = pd.read_excel(scenario_file, figure_worksheet)
-                main_logger.info(f'Loaded {len(scenarios)} from {scenario_file} workbook and {figure_worksheet} worksheet into dataframe')
+                main_logger.info(f'Exhibit "{file.stem}": Loaded {len(scenarios)} scenarios from "{scenario_file.stem}" workbook and "{figure_worksheet}" worksheet into dataframe')
             except ValueError as e:
-                warning_logger.warning(f'Worksheet {figure_worksheet} not found')
+                warning_logger.warning(f'Exhibit "{file.stem}": Worksheet {figure_worksheet} not found')
                 continue
             
             # for loop runs through different scenarios and:
@@ -258,11 +263,11 @@ def run_rea_scenario_yearly(config_file: Path | str):
                 # print(f'scenario inputs updated: {scenario_inputs}')
                 #must convert to dict for easier reading into later functions
                 scenario_inputs_dict = scenario_inputs.to_dict()
-                main_logger.info(f'Scenario {scenario_number} ({scenario_name}): Inputs loaded')
+                main_logger.info(f'Exhibit "{file.stem}", scenario {scenario_number} ({scenario_name}): Inputs loaded')
 
                 xl.set_excel_inputs(io_sheet, scenario_inputs_dict, input_cells_config, scenario_number, main_logger)
                 #detail logging of scenario inputs
-                log_lines = [f'Scenario {scenario_number} ({scenario_name}): Excel inputs set:']
+                log_lines = [f'Exhibit "{file.stem}", scenario {scenario_number} ({scenario_name}): Excel inputs set:']
                 #read and return all inputs from config file and scenario inputs override
                 for key in input_cells_config.keys():
                     if key in scenario_inputs_dict:
@@ -273,23 +278,23 @@ def run_rea_scenario_yearly(config_file: Path | str):
                 #Step #2: Solves for number of annual reintroductions required for gains to equal losses
                 # Goal Seek: set Goal:Loss ratio to 1 by changing Annual Mussel Reintroduction 
                 xl.run_goal_seek(io_sheet, input_cells_config['loss_ratio'], input_cells_config['annual_reintroduction'], goal_seek_config['target_value'])
-                main_logger.info(f'Scenario {scenario_number}: Required annual reintroduction calculated (for gain to equal loss)')
+                main_logger.info(f'Exhibit "{file.stem}", scenario {scenario_number} ({scenario_name}): Required annual reintroduction calculated (for gain to equal loss)')
 
                 #No such thing as partial mussel so round annual mussel reintroduction down to nearest whole number and set cell to value
                 annual_reintroduction_exact = round(io_sheet[input_cells_config['annual_reintroduction']].value, decimal_precision_results)
-                detail_logger.info(f'Scenario {scenario_number}: Exact annual reintroduction: {annual_reintroduction_exact}')
+                detail_logger.info(f'Exhibit "{file.stem}", scenario {scenario_number} ({scenario_name}): Exact annual reintroduction: {annual_reintroduction_exact}')
                 annual_reintroduction_rounded = round(annual_reintroduction_exact, 0)
-                detail_logger.info(f'Scenario {scenario_number}: Rounded Annual reintroduction: {annual_reintroduction_rounded}')
+                detail_logger.info(f'Exhibit "{file.stem}", scenario {scenario_number} ({scenario_name}): Rounded Annual reintroduction: {annual_reintroduction_rounded}')
                 io_sheet[input_cells_config['annual_reintroduction']].value =annual_reintroduction_exact
 
                 #Step #3: Reads desired outputs and writes both inputs and outputs to an output csv for later processing
                 #force excel to recalculate
                 wb_rea.app.calculate()
-                main_logger.info(f'Scenario {scenario_number}: Excel workbook recalculated')
+                main_logger.info(f'Exhibit "{file.stem}", scenario {scenario_number} ({scenario_name}): Excel workbook recalculated')
 
                 #read model outputs and append to csv file
                 outputs = xl.read_excel_outputs(io_sheet, output_cells_config, decimal_precision_results, scenarios, scenario_number, main_logger)
-                detail_logger.info(f'Read outputs directly from excel: {outputs.keys()}')
+                detail_logger.info(f'Exhibit "{file.stem}", scenario {scenario_number} ({scenario_name}): Read outputs directly from excel: {outputs.keys()}')
 
                 #append annual reintroduction results
                 outputs[f'{scenario_name}: Annual Reintroduction Rounded'] = annual_reintroduction_rounded
