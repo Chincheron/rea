@@ -80,6 +80,8 @@ def run_rea_scenario_total(config_file: Path | str, debug = False):
         # 3) Reads desired outputs and writes both inputs and outputs to an output csv for later processing
         # 4) QC check of REA QC tests
         for scenario_number, row in enumerate(scenarios.itertuples(index=False), start =1): 
+            scenario_name = scenarios.loc[(scenario_number-1),'scenario_name']
+
             #Step #1: Set inputs
             # Create scenario inputs class with defaults values
             scenario_inputs = rea_input_class.REAScenarioInputs.create_from_config(CONFIG_PATH, debug=True)
@@ -124,7 +126,7 @@ def run_rea_scenario_total(config_file: Path | str, debug = False):
             #read model outputs and append to csv file
             outputs = xl.read_excel_outputs(io_sheet, output_cells_config, decimal_precision_results, logger= main_logger)
             csv_data = {
-                        'Scenario_number': scenario_number,
+                        'Scenario_name': scenario_name,
                         **scenario_inputs_dict,
                         **outputs,
                         'total_gains_exact': total_gain_exact,
