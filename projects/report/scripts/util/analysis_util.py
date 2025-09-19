@@ -289,7 +289,6 @@ def run_rea_scenario_yearly(config_file: Path | str):
                 detail_logger.info(f'Exhibit "{file.stem}", scenario {scenario_number} ({scenario_name}): Exact annual reintroduction: {annual_reintroduction_exact}')
                 annual_reintroduction_rounded = math_util.round_annual_reintro(annual_reintroduction_exact)
                 detail_logger.info(f'Exhibit "{file.stem}", scenario {scenario_number} ({scenario_name}): Rounded Annual reintroduction: {annual_reintroduction_rounded}')
-                total_gain_exact = math_util.round_outputs(io_sheet[output_cells_config['total_gains']].value, decimal_precision_results) 
                 io_sheet[input_cells_config['annual_reintroduction']].value =annual_reintroduction_rounded
 
                 #Step #3: Reads desired outputs and writes both inputs and outputs to an output csv for later processing
