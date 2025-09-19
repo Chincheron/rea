@@ -1,6 +1,6 @@
 {
   "files": {
-    "rea_file": "Mussel REA_v2.0.2.xlsx",
+    "rea_file": "Mussel REA_v3.0.xlsx",
     "input_file": "Total_exhibits_inputs.csv"
   },
   "directories": {
@@ -16,27 +16,35 @@
       "input_sheet": "Matrix Inputs"
     },
     "input_cells": {
-      "number_killed": "M8",
-      "start_year_analysis": "M9",
-      "start_year_reproduction": "M10",
-      "discount_start_year": "M11",
-      "maximum_age": "M12",
-      "discount_factor": "M16",
-      "no_reintroduction_years": "M19",
-      "start_year_reintroduction": "M20",
-      "annual_reintroduction": "M21",
-      "loss_ratio": "T8",
-      "qc_test": "N24"
+      "number_killed": "C7",
+      "start_year_analysis": "C8",
+      "start_year_reproduction": "C9",
+      "discount_start_year": "C10",
+      "maximum_age": "C11",
+      "discount_factor": "C15",
+      "no_reintroduction_years": "C18",
+      "start_year_reintroduction": "C19",
+      "annual_reintroduction": "C20",
+      "loss_ratio": "F12",
+      "qc_test": "D23"
     },
     "output_cells_excluded": {
-      "direct_loss": "T3",
-      "indirect_loss": "T4",
-      "total_loss": "T5",
-      "total_gains": "T7"
+      "direct_loss": "F7",
+      "indirect_loss": "F8",
+      "total_loss": "F9",
+      "total_gains": "F11"
     },
     "output_cells_excluded_yearly": {
-      "direct_loss_yearly": "W4:W182",
-      "indirect_loss": "X4:X182"
+      "years": "H8:H186",
+      "discount_factor": "I8:I186",
+      "direct_loss_yearly": "J8:J186",
+      "indirect_loss_yearly": "K8:K186",
+      "total_loss_yearly": "L8:L186",
+      "total_gain_yearly": "M8:M186",
+      "direct_loss_yearly_cumulative": "N8:N186",
+      "indirect_loss_yearly_cumulative": "O8:O186",
+      "total_loss_yearly_cumulative": "P8:P186",
+      "total_gain_yearly_cumulative": "Q8:Q186"
     },
       "input_values_default": {
       "number_killed": 500000,
