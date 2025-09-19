@@ -16,6 +16,7 @@ import util.math_util as math_util
 
 def run_rea_scenario_total(config_file: Path | str):
     '''Runs REA based on scenario input file and returns total outputs (i.e. single cell outputs) '''
+    #TODO add 1) total released mussesl (i.e., xyears fo release) 2) help calculating dmsy/mussel? to final outputs file
     
     wb_rea = None
     app = None
