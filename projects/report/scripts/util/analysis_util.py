@@ -51,7 +51,7 @@ def run_rea_scenario_total(config_file: Path | str):
         
         output_dir = RESULTS_DIR / Path(script_run_results_directory) / Path(directories['output_folder'])
         output_dir.mkdir(parents=True, exist_ok=True)
-        output_file = output_dir / Path('scenario_output.csv')
+        output_file = output_dir / Path(f'{SCRIPT_NAME}_output.xlsx')
         
         input_dir = RESULTS_DIR / Path(script_run_results_directory) / Path(directories['input_folder'])
         input_dir.mkdir(parents=True, exist_ok=True)
@@ -195,8 +195,8 @@ def run_rea_scenario_yearly(config_file: Path | str):
         
         output_dir = RESULTS_DIR / Path(script_run_results_directory) / Path(directories['output_folder'])
         output_dir.mkdir(parents=True, exist_ok=True)
-        output_file = output_dir / Path('scenario_output.xlsx')
-        output_input_dir = output_dir / Path('scenario_inputs')
+        output_file = output_dir / Path(f'{SCRIPT_NAME}_output.xlsx')
+        output_input_dir = output_dir / Path(f'{SCRIPT_NAME}_scenario_inputs')
         output_input_dir.mkdir(parents=True, exist_ok=True)
         
         input_dir = RESULTS_DIR / Path(script_run_results_directory) / Path(directories['input_folder'])
