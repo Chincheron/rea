@@ -16,7 +16,7 @@ import util.analysis_util as analysis_util
 #TODO REfactor so that main can be called: pull CONSTANTS to constants file; incorporate load config into main?;      
 
 if __name__ == "__main__":
-    CONFIG_FILE = 'scenarios_config.json'
+    CONFIG_FILE = 'scenarios_table_config.json'
     analysis_util.run_rea_scenario_total(CONFIG_FILE)
 
     # how to deal with config file (i.e., where to specify, here or in analysis_util)
