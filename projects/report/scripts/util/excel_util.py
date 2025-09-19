@@ -70,7 +70,7 @@ def read_excel_outputs(sheet, output_cells, decimals, scenarios = None, scenario
     '''Read desired output cells from excel workbook
     Can optionally pass the current scenario row to append scenario name to headers (for yearly outputs primarily)
     '''
-    print(output_cells.items())
+
     if scenarios is None:
         outputs = {}
         for key, cell in output_cells.items():
