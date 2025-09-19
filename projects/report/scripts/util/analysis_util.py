@@ -14,7 +14,7 @@ import util.config as config_util
 import util.data_util as data_util
 import util.math_util as math_util
 
-def run_rea_scenario_total(config_file: Path | str):
+def run_rea_scenario_total(config_file: Path | str, debug = False):
     '''Runs REA based on scenario input file and returns total outputs (i.e. single cell outputs) '''
     #TODO add 1) total released mussesl (i.e., xyears fo release) 2) help calculating dmsy/mussel? to final outputs file
     
@@ -156,6 +156,11 @@ def run_rea_scenario_total(config_file: Path | str):
            
             main_logger.info(f'Scenario {scenario_number}: Scenario completed')
             console_logger.info(f'{scenario_number}/{len(scenarios)} complete')
+
+            if debug != False:
+                if scenario_number == debug:
+                    break
+
             
     finally:
         #close excel instance
