@@ -194,3 +194,22 @@ def append_output_excel_file(path: Path | str, output_dic: dict, sheet_name = No
     finally:
         if wb: wb.close()
     
+def text_wrap_headers(path: Path | str):
+    '''Formats all worksheets in provided workbook so that headers are text wrapped'''
+    try:
+        path = Path(path)
+        wb = xw.Book(path)
+
+        for sheet in wb.sheets:
+            row = sheet.range('1:1').expand('right')
+            # row.select()
+            row.column_width = 10
+            row.api.WrapText = True
+        
+        wb.save(path)
+    finally:
+        if wb: wb.close()
+
+    # open
+    # loop through worksheets
+    #     text wrap top line

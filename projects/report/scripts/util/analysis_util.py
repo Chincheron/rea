@@ -321,6 +321,8 @@ def run_rea_scenario_yearly(config_file: Path | str):
             output_data = {**figure_outputs}
             xl.append_output_excel_file(output_file, output_data, figure_worksheet, console_logger, warning_logger)
 
+            xl.text_wrap_headers(output_file)
+
             console_logger.info(f'{figure_worksheet} complete')
             
             
