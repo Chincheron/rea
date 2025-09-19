@@ -111,14 +111,27 @@ def run_rea_scenario_total(config_file: Path | str):
             total_gain_exact = math_util.round_outputs(io_sheet[output_cells_config['total_gains']].value, decimal_precision_results) 
             io_sheet[input_cells_config['annual_reintroduction']].value =annual_reintroduction_rounded
 
+            #calculate total mussel releases over the entire release period for calcualting per mussel statistics
+            total_releases_rounded = annual_reintroduction_rounded * io_sheet[input_cells_config['no_reintroduction_years']].value
+            total_releases_exact = math_util.round_outputs(annual_reintroduction_exact * io_sheet[input_cells_config['no_reintroduction_years']].value, decimal_precision_results)
+
             #Step #3: Reads desired outputs and writes both inputs and outputs to an output csv for later processing
             #force excel to recalculate
             wb_rea.app.calculate()
             main_logger.info(f'Scenario {scenario_number}: Excel workbook recalculated')
 
             #read model outputs and append to csv file
-            outputs = xl.read_excel_outputs(io_sheet, output_cells_config, decimal_precision_results, main_logger)
-            csv_data = {'Scenario_number': scenario_number, **scenario_inputs_dict, **outputs, 'total_gains_exact': total_gain_exact, 'Annual Reintroduction Rounded': annual_reintroduction_rounded, 'Annual Reintroduction Exact': annual_reintroduction_exact}
+            outputs = xl.read_excel_outputs(io_sheet, output_cells_config, decimal_precision_results, scenarios, scenario_number, main_logger)
+            csv_data = {
+                        'Scenario_number': scenario_number,
+                        **scenario_inputs_dict,
+                        **outputs,
+                        'total_gains_exact': total_gain_exact,
+                        'Annual Reintroduction Rounded': annual_reintroduction_rounded,
+                        'Annual Reintroduction Exact': annual_reintroduction_exact,
+                        'Total Reintroduction Rounded': total_releases_rounded,
+                        'Total Reintroduction Exact': total_releases_exact
+                        }
             if not output_file.exists():
                 csv_util.create_output_csv(output_file, csv_data)
             csv_util.append_output_to_csv(output_file, list(csv_data.values()))
