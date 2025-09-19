@@ -122,7 +122,7 @@ def run_rea_scenario_total(config_file: Path | str, debug = False):
             main_logger.info(f'Scenario {scenario_number}: Excel workbook recalculated')
 
             #read model outputs and append to csv file
-            outputs = xl.read_excel_outputs(io_sheet, output_cells_config, decimal_precision_results, scenarios, scenario_number, main_logger)
+            outputs = xl.read_excel_outputs(io_sheet, output_cells_config, decimal_precision_results, logger= main_logger)
             csv_data = {
                         'Scenario_number': scenario_number,
                         **scenario_inputs_dict,

@@ -70,16 +70,25 @@ def read_excel_outputs(sheet, output_cells, decimals, scenarios = None, scenario
     '''Read desired output cells from excel workbook
     Can optionally pass the current scenario row to append scenario name to headers (for yearly outputs primarily)
     '''
-    
-    scenario_name = scenarios.loc[(scenario_number-1),'scenario_name']
-    outputs = {}
-    outputs[scenario_name] = '' 
+    print(output_cells.items())
+    if scenarios is None:
+        outputs = {}
+        for key, cell in output_cells.items():
+            #read value of each cell
+            value = sheet[cell].value
+            outputs[f'{key}'] = round_cells(value, decimals)
+        return outputs
+        
+    else:
+        scenario_name = scenarios.loc[(scenario_number-1),'scenario_name']
+        outputs = {}
+        outputs[scenario_name] = '' #ensures an empty column between yearly scenarios for readability
 
-    for key, cell in output_cells.items():
-        #read value of each cell
-        value = sheet[cell].value
-        outputs[f'{scenario_name}:{key}'] = round_cells(value, decimals)
-    return outputs
+        for key, cell in output_cells.items():
+            #read value of each cell
+            value = sheet[cell].value
+            outputs[f'{scenario_name}:{key}'] = round_cells(value, decimals)
+        return outputs
 
 def check_qc(sheet, qc_cell, output_dir, csv_data, scenario_number, main_logger = None, warning_logger = None):
     '''Checks value of QC cell in Excel and write input/outputs to file if not "PASS"'''
