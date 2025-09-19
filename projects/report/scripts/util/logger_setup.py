@@ -17,6 +17,11 @@ def setup_loggers(directory):
     main_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
     main_handler.setFormatter(main_formatter)
     main_logger.addHandler(main_handler)
+    #also write to detailed log
+    main_detail_handler = logging.FileHandler(log_dir / 'detailed_outputs.log')
+    main_detail_formatter = logging.Formatter('%(asctime)s - %(message)s')
+    main_detail_handler.setFormatter(main_detail_formatter)
+    main_logger.addHandler(main_detail_handler)
 
     # Warning logger for warnings and errors
     warning_logger = logging.getLogger('warnings')

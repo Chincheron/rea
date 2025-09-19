@@ -3,6 +3,7 @@ import xlwings as xw
 from pathlib import Path
 import logging
 import util.csv_util as csv_util
+import pandas as pd
 
 def load_workbook(workbook: Path |str, visible: bool = False) -> tuple[xw.Book, xw.App]:
     '''Loads Excel file using xlwing in background (headless) mode'''
@@ -65,15 +66,19 @@ def round_cells(value, decimals):
     else:
         return value
 
-def read_excel_outputs(sheet, output_cells, decimals, logger = None):
-    '''Read desired output cells from excel workbook'''
+def read_excel_outputs(sheet, output_cells, decimals, scenarios = None, scenario_number = None,  logger = None):
+    '''Read desired output cells from excel workbook
+    Can optionally pass the current scenario row to append scenario name to headers (for yearly outputs primarily)
+    '''
     
+    scenario_name = scenarios.loc[(scenario_number-1),'scenario_name']
     outputs = {}
+    outputs[scenario_name] = '' 
 
     for key, cell in output_cells.items():
         #read value of each cell
         value = sheet[cell].value
-        outputs[key] = round_cells(value, decimals)
+        outputs[f'{scenario_name}:{key}'] = round_cells(value, decimals)
     return outputs
 
 def check_qc(sheet, qc_cell, output_dir, csv_data, scenario_number, main_logger = None, warning_logger = None):
@@ -102,3 +107,90 @@ def check_qc(sheet, qc_cell, output_dir, csv_data, scenario_number, main_logger 
         csv_util.append_output_to_csv(output_file, csv_data.values())
         warning_logger.warning(f'Scenario {scenario_number}: Failed scenario inputs/outputs written to failed scenario outputs file ')
 
+def create_output_excel_file(path: Path | str, headers: list | dict, sheet_name = None, main_logger: logging.Logger | None = None, warning_logger: logging.Logger | None = None):
+    '''Create excel file and populate with specified headers'''
+
+    #setup loggers
+    if main_logger is None:
+        main_logger = logging.getLogger(__name__)
+    if warning_logger is None:
+        warning_logger = logging.getLogger(__name__)    
+    
+    try:
+            
+        if isinstance(headers, dict):
+            headers = list(headers.keys()) 
+            
+        path = Path(path) #/ 'teset_excel_create'
+
+        wb = xw.Book()
+        main_logger.info(f'Workbook {path} created')
+
+        # new_sheet = wb.sheets.add(name= 'teset') 
+
+        #write headers ()
+        # new_sheet.range('A1').value = headers
+        # new_sheet.range('a2').options(transpose=True).value = ('Hello', 'test')
+
+        wb.save(path)
+        # with open(path, 'w', newline='') as file:
+        #     writer = csv.writer(file)
+        #     writer.writerow(headers)
+        #     logger.info(f'Ouput file created')
+    finally:
+        if wb: wb.close()
+        
+def append_output_excel_file(path: Path | str, output_dic: dict, sheet_name = None, main_logger: logging.Logger | None = None, warning_logger: logging.Logger | None = None):
+    '''Append outputs to excel file and populate with specified headers'''
+    
+    #setup loggers
+    if main_logger is None:
+        main_logger = logging.getLogger(__name__)
+    if warning_logger is None:
+        warning_logger = logging.getLogger(__name__)
+
+    path = Path(path)
+
+    if not path.exists():
+        main_logger.info(f'{path} does not exist. Creating...')
+        create_output_excel_file(path, output_dic, sheet_name, main_logger, warning_logger)
+    
+    
+    try:
+            
+        if isinstance(output_dic, dict):
+            headers = list(output_dic.keys()) 
+            
+        path = Path(path) 
+
+        wb = xw.Book(path)
+
+
+        #create worksheet
+        new_sheet = wb.sheets.add(name= sheet_name) 
+        main_logger.info(f'Worksheet {sheet_name} created')
+
+        #write headers ()
+        new_sheet.range('A1').value = headers
+        
+        #tracking columns for loop below
+        col_num = 1
+        row_num = 2
+
+        #write data
+        for key in output_dic:
+            col_output = output_dic[key]
+            start_cell = new_sheet.cells(row_num, col_num)
+            start_cell.options(transpose=True).value = col_output
+            col_num += 1
+            # new_sheet.range('A2').options(transpose=True).value = col_output
+            # new_sheet.range('a2').options(transpose=True).value = (output_dic.values())
+
+        wb.save(path)
+        # with open(path, 'w', newline='') as file:
+        #     writer = csv.writer(file)
+        #     writer.writerow(headers)
+        #     logger.info(f'Ouput file created')
+    finally:
+        if wb: wb.close()
+    
