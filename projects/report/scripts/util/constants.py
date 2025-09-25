@@ -1,4 +1,4 @@
-import util.file_util as file_util
+import chincheron_util.file_util as file_util
 
 #Project Constants
 REPO_DIR = file_util.find_repository_root()

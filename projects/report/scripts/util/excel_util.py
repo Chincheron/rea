@@ -2,7 +2,7 @@
 import xlwings as xw
 from pathlib import Path
 import logging
-import util.csv_util as csv_util
+import chincheron_util.csv_util as csv_util
 import pandas as pd
 
 def load_workbook(workbook: Path |str, visible: bool = False) -> tuple[xw.Book, xw.App]:

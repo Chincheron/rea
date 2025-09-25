@@ -5,7 +5,11 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "chincheron-util",
     "openpyxl>=3.1.5",
     "pandas>=2.3.2",
     "xlwings>=0.33.15",
 ]
+
+[tool.uv.sources]
+chincheron-util = { git = "https://github.com/Chincheron/chincheron_util.git", rev = "main" }

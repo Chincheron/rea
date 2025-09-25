@@ -1,18 +1,18 @@
 '''Functions for running full analyses'''
 from pathlib import Path
 from datetime import datetime
-import util.file_util as file_util
+import chincheron_util.file_util as file_util
 import pandas as pd
-import util.logger_setup as logger_setup
+import chincheron_util.logger_setup as logger_setup
 import time
-import util.excel_util as xl
-import util.csv_util as csv_util
+import chincheron_util.excel_util as xl
+import chincheron_util.csv_util as csv_util
 import models.rea.inputs as rea_input_class
-import util.config as config_utl
-from util.constants import * 
-import util.config as config_util
-import util.data_util as data_util
-import util.math_util as math_util
+import chincheron_util.config as config_utl
+from chincheron_util.constants import * 
+import chincheron_util.config as config_util
+import chincheron_util.data_util as data_util
+import chincheron_util.math_util as math_util
 
 def run_rea_scenario_total(config_file: Path | str, debug = False):
     '''Runs REA based on scenario input file and returns total outputs (i.e. single cell outputs) '''
