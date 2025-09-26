@@ -12,4 +12,4 @@ dependencies = [
 ]
 
 [tool.uv.sources]
-chincheron-util = { git = "https://github.com/Chincheron/chincheron_util.git", rev = "main" }
+chincheron-util = { git = "https://github.com/Chincheron/chincheron_util.git", rev = "v1.0" }
