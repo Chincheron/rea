@@ -2,6 +2,8 @@
 *.csv
 *.docx
 *.zip
+uv.toml
+uv.lock
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
