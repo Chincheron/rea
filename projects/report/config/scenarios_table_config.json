@@ -1,6 +1,6 @@
 {
   "files": {
-    "rea_file": "Mussel REA_v3.0.xlsx",
+    "rea_file": "Mussel REA_v3.1.xlsx",
     "input_file": "Scenarios_table_inputs.csv"
   },
   "directories": {
@@ -44,7 +44,8 @@
       "direct_loss_yearly_cumulative": "N8:N186",
       "indirect_loss_yearly_cumulative": "O8:O186",
       "total_loss_yearly_cumulative": "P8:P186",
-      "total_gain_yearly_cumulative": "Q8:Q186"
+      "total_gain_yearly_cumulative": "Q8:Q186",
+      "discount_period": "R8:R186"
     },
       "input_values_default": {
       "number_killed": 6000000,

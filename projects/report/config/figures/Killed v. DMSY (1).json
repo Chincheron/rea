@@ -11,7 +11,8 @@
         "direct_loss_yearly_cumulative": "True",
         "indirect_loss_yearly_cumulative": "True",
         "total_loss_yearly_cumulative": "True",
-        "total_gain_yearly_cumulative": "True"
+        "total_gain_yearly_cumulative": "True",
+        "discount_period": "True"
       },
       "output_cells_excluded": {
       "direct_loss": "False",
