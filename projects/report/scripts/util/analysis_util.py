@@ -13,6 +13,7 @@ from util.constants import *
 import chincheron_util.config as config_util
 import chincheron_util.data_util as data_util
 import chincheron_util.math_util as math_util
+import git
 
 def run_rea_scenario_total(config_file: Path | str, debug = False):
     '''Runs REA based on scenario input file and returns total outputs (i.e. single cell outputs) '''
@@ -227,6 +228,10 @@ def run_rea_scenario_yearly(config_file: Path | str):
         
         config_folder = PROJECT_BASE_DIR / directories['config_folder']
 
+        #get current git hash and add to log
+        repo = git.Repo(search_parent_directories=True)
+        hash = repo.head.object.hexsha  
+        main_logger.info(f'Code version used to generate output: {hash}')
 
         #copy current REA version file 
         file_util.copy_input_from_config(copy_dir, input_dir, files)
